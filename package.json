@@ -1,0 +1,20 @@
+{
+  "name": "xylit-ssg",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "start": "npm run start --workspace=theme-editorial"
+  },
+  "workspaces": [
+    "packages/ssg",
+    "packages/theme-editorial"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {},
+  "bin": {
+    "xylit": "src/cli.js"
+  }
+}

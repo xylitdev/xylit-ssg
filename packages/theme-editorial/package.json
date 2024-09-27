@@ -1,0 +1,19 @@
+{
+  "name": "theme-editorial",
+  "version": "0.0.1",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "LANG=de xylit --dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "'example of using the static site generator'",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.4",
+    "lorem-ipsum": "^2.0.8",
+    "@xylit/ssg": "*"
+  },
+  "devDependencies": {}
+}
