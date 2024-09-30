@@ -13,7 +13,6 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "dependencies": {},
   "bin": {
     "xylit": "src/cli.js"
   }

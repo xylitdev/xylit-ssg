@@ -1,6 +1,8 @@
 import { fork } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
+import { styles } from "./literals/style.js";
+
 export const render = async templatePath => {
   let child;
 
@@ -24,5 +26,8 @@ process.on("message", async ({ componentPath, context }) => {
 
   Object.assign(ctx, context);
 
-  process.send(await Component());
+  process.send({
+    styles: await Promise.all([...styles.values()].flat()),
+    content: await Component(),
+  });
 });

@@ -6,8 +6,14 @@ import * as walk from "acorn-walk";
 import MagicString from "magic-string";
 
 const injectImports = (source, ast) => {
-  source.prepend("const html = Xylit.createHtmlLiteral(import.meta);");
-  source.prepend("import * as Xylit from '@xylit/ssg';");
+  source.prepend(
+    [
+      'import * as Xylit from "@xylit/ssg";',
+      "const { html, style } = Xylit.init(import.meta);",
+      "export const meta = import.meta;",
+      "",
+    ].join("\n")
+  );
 };
 
 const wrapDefaultExport = (source, ast) => {

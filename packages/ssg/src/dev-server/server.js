@@ -10,7 +10,7 @@ import mime from "mime";
 import { addDependency, dependantsOf } from "../dependencies.js";
 import FileSystemRouter from "../file-system-router.js";
 import { render } from "../render-process.js";
-import { transformSass } from "../style-processing.js";
+import { transform } from "../literals/style.js";
 import { defaults } from "../utils/common.js";
 import { fileExists } from "../utils/fs.js";
 
@@ -41,12 +41,14 @@ export const createServer = conf => {
       const componentDir = dirname(componentPath);
 
       try {
-        doc = await render({
+        const { content, styles } = await render({
           componentPath,
           context: {
             url: { pathname: req.url },
           },
-        }).then(parse);
+        });
+
+        doc = parse(content);
 
         const node =
           doc.querySelector("head") ||
@@ -78,6 +80,11 @@ export const createServer = conf => {
           </script>`
         );
 
+        node.insertAdjacentHTML?.(
+          "beforeend",
+          `<style>${styles.map(s => s.source).join("\n")}</style>`
+        );
+
         doc.querySelectorAll("link[rel=stylesheet]")?.forEach?.(node => {
           const href = node.getAttribute("href");
           const filePath = resolve(componentDir, href);
@@ -99,19 +106,19 @@ export const createServer = conf => {
       return res.end(doc.toString());
     }
 
-    if ([".sass", ".scss"].some(ext => req.url.endsWith(ext))) {
+    if ([".sass", ".scss", ".css"].some(ext => req.url.endsWith(ext))) {
       const filePath = join(process.cwd(), req.url);
 
       try {
-        const result = await transformSass(null, { src: filePath });
+        const result = await transform(null, { src: filePath });
 
         addDependency(
           pathToFileURL(filePath).toString(),
-          ...result.loadedUrls.map(url => url.toString())
+          ...result.dependencies.map(url => url.toString())
         );
 
         res.writeHead(200, mime.getType(req.url));
-        res.end(result.css);
+        res.end(result.source);
       } catch (e) {
         console.error(e);
         const doc = await Server404().then(parse);

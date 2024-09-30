@@ -1,3 +1,8 @@
+import { createHash } from "node:crypto";
+
+import { createHtmlLiteral } from "./literals/html.js";
+import { createStyleLiteral, styles } from "./literals/style.js";
+
 import { isFunction, isObject } from "./utils/common.js";
 
 const createSlotApi = slots => {
@@ -10,7 +15,19 @@ const createSlotApi = slots => {
   return slot;
 };
 
-export { default as createHtmlLiteral } from "./literals/html.js";
+export const init = meta => {
+  meta.styleDefinitions = [];
+  meta.urlHash = createHash("shake256", { outputLength: 5 })
+    .update(meta.url)
+    .digest("hex");
+
+  styles.set(meta.url, meta.styleDefinitions);
+
+  return {
+    html: createHtmlLiteral(meta),
+    style: createStyleLiteral(meta),
+  };
+};
 
 export const context = {};
 

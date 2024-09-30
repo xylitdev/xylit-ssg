@@ -20,6 +20,8 @@
     "magic-string": "^0.30.11",
     "mime": "^4.0.4",
     "node-html-parser": "^6.1.13",
+    "postcss-modules": "^6.0.0",
+    "postcss-selector-parser": "^6.1.2",
     "sass": "^1.79.3",
     "ws": "^8.18.0"
   },

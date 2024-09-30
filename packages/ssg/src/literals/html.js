@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-
 import {
   isArray,
   isBoolean,
@@ -83,13 +81,9 @@ const transformValues = async (substitutions, gaps) => {
   return values;
 };
 
-export default function createHtmlLiteral(meta) {
+export const createHtmlLiteral = meta => {
   const { parse } = createParser({
-    tagId:
-      meta?.url &&
-      createHash("shake256", { outputLength: 5 })
-        .update(meta.url)
-        .digest("hex"),
+    tagId: meta.urlHash,
   });
 
   return async (strings, ...substitutions) => {
@@ -99,4 +93,4 @@ export default function createHtmlLiteral(meta) {
 
     return String.raw({ raw }, ...values);
   };
-}
+};

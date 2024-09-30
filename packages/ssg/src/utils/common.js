@@ -82,3 +82,5 @@ export const monkeyPatch = (obj, methods) => {
 
   return obj;
 };
+
+export const raw = (raw, ...values) => String.raw({ raw }, ...values);
