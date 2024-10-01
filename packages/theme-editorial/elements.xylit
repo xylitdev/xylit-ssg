@@ -1,4 +1,5 @@
 import Shell from "./components/shell.xylit";
+import Box from "./components/box.xylit";
 
 export default Shell(
   { title: "Elements" },
@@ -512,57 +513,59 @@ export default Shell(
 
           <h4>Fit</h4>
           <span class="image fit"><img src="images/pic11.jpg" alt="" /></span>
-          <div class="box alt">
-            <div class="row gtr-50 gtr-uniform">
-              <div class="col-4">
-                <span class="image fit"
-                  ><img src="images/pic01.jpg" alt=""
-                /></span>
+          ${Box({ alt: true }, [
+            html`
+              <div class="row gtr-50 gtr-uniform">
+                <div class="col-4">
+                  <span class="image fit"
+                    ><img src="images/pic01.jpg" alt=""
+                  /></span>
+                </div>
+                <div class="col-4">
+                  <span class="image fit"
+                    ><img src="images/pic02.jpg" alt=""
+                  /></span>
+                </div>
+                <div class="col-4">
+                  <span class="image fit"
+                    ><img src="images/pic03.jpg" alt=""
+                  /></span>
+                </div>
+                <!-- Break -->
+                <div class="col-4">
+                  <span class="image fit"
+                    ><img src="images/pic03.jpg" alt=""
+                  /></span>
+                </div>
+                <div class="col-4">
+                  <span class="image fit"
+                    ><img src="images/pic01.jpg" alt=""
+                  /></span>
+                </div>
+                <div class="col-4">
+                  <span class="image fit"
+                    ><img src="images/pic02.jpg" alt=""
+                  /></span>
+                </div>
+                <!-- Break -->
+                <div class="col-4">
+                  <span class="image fit"
+                    ><img src="images/pic02.jpg" alt=""
+                  /></span>
+                </div>
+                <div class="col-4">
+                  <span class="image fit"
+                    ><img src="images/pic03.jpg" alt=""
+                  /></span>
+                </div>
+                <div class="col-4">
+                  <span class="image fit"
+                    ><img src="images/pic01.jpg" alt=""
+                  /></span>
+                </div>
               </div>
-              <div class="col-4">
-                <span class="image fit"
-                  ><img src="images/pic02.jpg" alt=""
-                /></span>
-              </div>
-              <div class="col-4">
-                <span class="image fit"
-                  ><img src="images/pic03.jpg" alt=""
-                /></span>
-              </div>
-              <!-- Break -->
-              <div class="col-4">
-                <span class="image fit"
-                  ><img src="images/pic03.jpg" alt=""
-                /></span>
-              </div>
-              <div class="col-4">
-                <span class="image fit"
-                  ><img src="images/pic01.jpg" alt=""
-                /></span>
-              </div>
-              <div class="col-4">
-                <span class="image fit"
-                  ><img src="images/pic02.jpg" alt=""
-                /></span>
-              </div>
-              <!-- Break -->
-              <div class="col-4">
-                <span class="image fit"
-                  ><img src="images/pic02.jpg" alt=""
-                /></span>
-              </div>
-              <div class="col-4">
-                <span class="image fit"
-                  ><img src="images/pic03.jpg" alt=""
-                /></span>
-              </div>
-              <div class="col-4">
-                <span class="image fit"
-                  ><img src="images/pic01.jpg" alt=""
-                /></span>
-              </div>
-            </div>
-          </div>
+            `,
+          ])}
 
           <h4>Left &amp; Right</h4>
           <p>
@@ -593,15 +596,17 @@ export default Shell(
 
           <!-- Box -->
           <h3>Box</h3>
-          <div class="box">
-            <p>
-              Felis sagittis eget tempus primis in faucibus vestibulum. Blandit
-              adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu
-              faucibus. Integer ac pellentesque praesent tincidunt felis
-              sagittis eget. tempus euismod. Magna sed etiam ante ipsum primis
-              in faucibus vestibulum.
-            </p>
-          </div>
+          ${Box({}, [
+            html`
+              <p>
+                Felis sagittis eget tempus primis in faucibus vestibulum.
+                Blandit adipiscing eu felis iaculis volutpat ac adipiscing
+                accumsan eu faucibus. Integer ac pellentesque praesent tincidunt
+                felis sagittis eget. tempus euismod. Magna sed etiam ante ipsum
+                primis in faucibus vestibulum.
+              </p>
+            `,
+          ])}
 
           <!-- Preformatted Code -->
           <h3>Preformatted</h3>

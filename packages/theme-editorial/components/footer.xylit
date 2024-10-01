@@ -7,3 +7,18 @@ export default html`
     </p>
   </footer>
 `;
+
+style({ lang: "scss", type: "scoped" })/*scss*/ `
+  @import "assets/sass/utils.scss";
+
+  #footer {
+    .copyright {
+      color: _palette(fg-light);
+      font-size: 0.9em;
+
+      a {
+        color: inherit;
+      }
+    }
+  }
+`;

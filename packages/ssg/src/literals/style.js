@@ -5,13 +5,19 @@ import PostcssModulesPlugin from "postcss-modules";
 import PostcssScopedPlugin from "../postcss/scoped-plugin.js";
 import { compileAsync, compileStringAsync } from "sass";
 
-import { isArray, raw } from "../utils/common.js";
+import { isArray } from "../utils/common.js";
+
+// potential fix for: https://github.com/lit/lit-element/issues/637?
+// lets see if i am running into some problems
+const raw = (strings, ...values) => String.raw({ raw: strings.raw }, ...values);
 
 export const styles = new Map();
 
 const transformSass = async input => {
   const langReg = /(sass|scss)$/;
-  const options = { loadPaths: ["node_modules", "../../node_modules"] };
+  const options = {
+    loadPaths: [process.cwd(), "node_modules", "../../node_modules"],
+  };
 
   if (!langReg.test(input.src) && !langReg.test(input.lang)) {
     return input;
