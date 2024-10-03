@@ -12,8 +12,5 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
-  "bin": {
-    "xylit": "src/cli.js"
-  }
+  "description": ""
 }

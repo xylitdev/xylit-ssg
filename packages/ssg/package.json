@@ -2,12 +2,9 @@
   "name": "@xylit/ssg",
   "version": "0.0.1",
   "description": "Xylit Static Site Generator",
-  "main": "src/xylit.js",
+  "main": "src/ssg.js",
   "type": "module",
   "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -26,6 +23,6 @@
     "ws": "^8.18.0"
   },
   "bin": {
-    "xylit": "./bin/xylit.js"
+    "ssg": "bin/ssg.js"
   }
 }

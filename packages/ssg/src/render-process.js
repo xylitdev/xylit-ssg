@@ -20,7 +20,7 @@ export const render = async templatePath => {
 
 process.on("message", async ({ componentPath, context }) => {
   const [{ context: ctx }, { default: Component }] = await Promise.all([
-    import("./xylit.js"),
+    import("./ssg.js"),
     import(componentPath),
   ]);
 

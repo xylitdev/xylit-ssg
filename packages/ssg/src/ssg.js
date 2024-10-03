@@ -29,7 +29,9 @@ export const init = meta => {
   };
 };
 
-export const context = {};
+export const context = {
+  lang: process.env.LANG,
+};
 
 export const defineComponent = (meta, guard) => {
   return (properties, ...children) => {
