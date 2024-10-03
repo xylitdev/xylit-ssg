@@ -61,7 +61,9 @@ class XylitHandler extends DomHandler {
   onprocessinginstruction(name, data) {
     super.onprocessinginstruction(name, data);
 
-    this.gaps.push(PROCESSING_INSTRUCTION);
+    if (placeholderReg.test(data)) {
+      this.gaps.push(PROCESSING_INSTRUCTION);
+    }
   }
 }
 
