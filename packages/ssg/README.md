@@ -1,3 +1,3 @@
-# Xylit Static Site Generator
+# Xylit SSG
 
-Xylit SSG is a new Static Site Generator is heavily unsing template literals.
+This package contains the core functionality of [Xylit SSG](../../).
