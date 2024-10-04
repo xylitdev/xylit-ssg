@@ -9,4 +9,4 @@ Being Less Bloated... Being More Straightforward!
 
 ## Getting Started
 
-Visit our [official documentation](https://xylit.dev/getting-started/installation-and-setup/).
+Please follow our [official documentation](https://xylit.dev/getting-started/installation-and-setup/).
