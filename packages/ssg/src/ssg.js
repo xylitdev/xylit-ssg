@@ -1,9 +1,12 @@
 import { createHash } from "node:crypto";
+import EventEmitter from "node:events";
 
 import { createHtmlLiteral } from "./literals/html.js";
-import { createStyleLiteral, styles } from "./literals/style.js";
+import { createStyleLiteral } from "./literals/style.js";
 
 import { isFunction, isObject } from "./utils/common.js";
+
+const eventEmitter = new EventEmitter();
 
 const createSlotApi = slots => {
   const slot = (...args) => slot["default"]?.(...args);
@@ -15,13 +18,15 @@ const createSlotApi = slots => {
   return slot;
 };
 
+export const context = {
+  lang: process.env.LANG,
+};
+
 export const init = meta => {
   meta.styleDefinitions = [];
   meta.urlHash = createHash("shake256", { outputLength: 5 })
     .update(meta.url)
     .digest("hex");
-
-  styles.set(meta.url, meta.styleDefinitions);
 
   return {
     html: createHtmlLiteral(meta),
@@ -29,12 +34,20 @@ export const init = meta => {
   };
 };
 
-export const context = {
-  lang: process.env.LANG,
+export const emit = (eventName, ...args) =>
+  eventEmitter.emit(eventName, ...args);
+
+export const on = (eventName, listener, options) => {
+  return options?.once
+    ? eventEmitter.once(eventName, listener)
+    : eventEmitter.on(eventName, listener);
 };
 
+export const off = (eventName, listener) =>
+  eventEmitter.off(eventName, listener);
+
 export const defineComponent = (meta, guard) => {
-  return (properties, ...children) => {
+  return async (properties, ...children) => {
     const template = guard();
 
     const props = { ...properties };
@@ -45,8 +58,12 @@ export const defineComponent = (meta, guard) => {
           : createSlotApi({ default: children[0] })
         : createSlotApi({ default: children.flat() });
 
-    return isFunction(template)
+    const result = isFunction(template)
       ? template({ ...context, props, slot })
       : template;
+
+    emit("component:render", { meta });
+
+    return result;
   };
 };

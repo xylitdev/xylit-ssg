@@ -11,8 +11,6 @@ import { isArray } from "../utils/common.js";
 // lets see if i am running into some problems
 const raw = (strings, ...values) => String.raw({ raw: strings.raw }, ...values);
 
-export const styles = new Map();
-
 const transformSass = async input => {
   const langReg = /(sass|scss)$/;
   const options = {
@@ -95,7 +93,7 @@ export const createStyleLiteral = meta => {
       src: options.src && resolve(meta.dirname, options.src),
     });
 
-    meta.styleDefinitions.push(source, result);
+    meta.styleDefinitions.push(result);
     result.then(result => Object.assign(exports, result.exports));
 
     return exports;

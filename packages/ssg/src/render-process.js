@@ -1,8 +1,6 @@
 import { fork } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-import { styles } from "./literals/style.js";
-
 export const render = async templatePath => {
   let child;
 
@@ -19,15 +17,25 @@ export const render = async templatePath => {
 };
 
 process.on("message", async ({ componentPath, context }) => {
-  const [{ context: ctx }, { default: Component }] = await Promise.all([
-    import("./ssg.js"),
-    import(componentPath),
-  ]);
+  const [{ context: ctx, on, off }, { default: Component }] = await Promise.all(
+    [import("./ssg.js"), import(componentPath)]
+  );
 
+  const styles = [];
   Object.assign(ctx, context);
 
-  process.send({
-    styles: await Promise.all([...styles.values()].flat()),
-    content: await Component(),
+  const onRender = ({ meta }) => {
+    styles.push(...meta.styleDefinitions);
+  };
+
+  on("component:render", onRender);
+
+  Component().then(async content => {
+    off("component:render", onRender);
+
+    process.send({
+      content,
+      styles: await Promise.all(styles),
+    });
   });
 });
