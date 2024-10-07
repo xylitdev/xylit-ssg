@@ -8,7 +8,7 @@ import { parse } from "node-html-parser";
 import mime from "mime";
 
 import { addDependency, dependantsOf } from "../dependencies.js";
-import FileSystemRouter from "../file-system-router.js";
+import Router from "../router.js";
 import { render } from "../render-process.js";
 import { transform } from "../literals/style.js";
 import { defaults } from "../utils/common.js";
@@ -27,11 +27,7 @@ export const createServer = conf => {
 
   const server = createHttpServer();
   const livereload = createLivereload({ server });
-
-  const router = new FileSystemRouter({
-    index: "index.xylit",
-    type: ".xylit",
-  });
+  const router = new Router();
 
   server.on("request", async (req, res) => {
     const componentPath = router.match(req.url);
