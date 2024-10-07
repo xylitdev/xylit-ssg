@@ -55,6 +55,28 @@ export default class Router {
     });
   }
 
+  entries() {
+    const entries = [];
+    const nodes = [["", this.#root]];
+
+    while (nodes.length) {
+      const [path, node] = nodes.shift();
+
+      for (const key in node) {
+        const value = node[key];
+        const route = path ? `${path}/${key}` : key;
+
+        if (typeof value === "string") {
+          entries.push([route, value]);
+        } else {
+          nodes.push([route, value]);
+        }
+      }
+    }
+
+    return entries;
+  }
+
   match(path) {
     const url = new URL(path, "file://");
 
