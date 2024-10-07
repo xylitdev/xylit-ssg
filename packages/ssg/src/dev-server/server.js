@@ -9,7 +9,7 @@ import mime from "mime";
 
 import { addDependency, dependantsOf } from "../dependencies.js";
 import Router from "../router.js";
-import { render } from "../render-process.js";
+import { exec, kill } from "../processor.js";
 import { transform } from "../literals/style.js";
 import { defaults } from "../utils/common.js";
 import { fileExists } from "../utils/fs.js";
@@ -37,14 +37,11 @@ export const createServer = conf => {
       const componentDir = dirname(componentPath);
 
       try {
-        const { content, styles } = await render({
-          componentPath,
-          context: {
-            url: { pathname: req.url },
-          },
-        });
+        let styles;
 
-        doc = parse(content);
+        ({ doc, styles } = await exec(componentPath, {
+          url: { pathname: req.url },
+        }));
 
         const node =
           doc.querySelector("head") ||
@@ -151,6 +148,7 @@ export const createServer = conf => {
     ignoreInitial: true,
     ignored: file => file.includes("node_modules"),
   }).on("all", async (event, file) => {
+    kill();
     await router.scan(conf.pages);
 
     const fileUrl = pathToFileURL(file).toString();

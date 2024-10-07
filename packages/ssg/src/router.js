@@ -78,8 +78,8 @@ export default class Router {
     return entries;
   }
 
-  match(path) {
-    const url = new URL(path, "file://");
+  match(route) {
+    const url = new URL(route, "file://");
 
     const segments = url.pathname
       .trim()
