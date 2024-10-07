@@ -9,6 +9,7 @@ export default class Router {
   #root;
 
   constructor(conf) {
+    this.#rootDir = process.cwd();
     this.#config = {
       indices: [conf?.index ?? "index.xylit"].flat(),
       types: [conf?.type ?? ".xylit"].flat(),
