@@ -1,24 +1,26 @@
 import { readdir } from "node:fs/promises";
-import { relative, resolve, sep } from "node:path";
+import { basename, relative, resolve, sep } from "node:path";
 
-import { get, set, unset, until, isString } from "./utils/common.js";
+import { set, unset } from "./utils/common.js";
+import { exec } from "./processor.js";
 
 export default class Router {
-  #config;
-  #rootDir;
-  #root;
+  #conf;
+  #entries;
 
   constructor(conf) {
-    this.#rootDir = process.cwd();
-    this.#config = {
+    this.#entries = {};
+    this.#conf = {
+      root: conf?.root ?? resolve(process.cwd(), "pages"),
       indices: [conf?.index ?? "index.xylit"].flat(),
       types: [conf?.type ?? ".xylit"].flat(),
+      ignore: conf?.ignore ?? (name => name.startsWith("_")),
     };
   }
 
   link(file) {
-    const { types } = this.#config;
-    const relativePath = relative(this.#rootDir, file);
+    const { types } = this.#conf;
+    const relativePath = relative(this.#conf.root, file);
 
     if (
       !relativePath ||
@@ -29,80 +31,74 @@ export default class Router {
     }
 
     const segments = relativePath.split(sep);
-    set(this.#root, segments, file);
+    set(this.#conf.root, segments, file);
 
     return true;
   }
 
   unlink(file) {
-    const segments = relative(this.#rootDir, file).split(sep);
-    unset(this.#root, segments);
+    const segments = relative(this.#conf.root, file).split(sep);
+    unset(this.#conf.root, segments);
   }
 
-  async scan(rootDir = this.#rootDir) {
-    this.#rootDir = rootDir;
-    this.#root = {};
-
-    const dirents = await readdir(rootDir, {
-      recursive: true,
-      withFileTypes: true,
-    });
-
-    dirents.forEach(dirent => {
-      if (!dirent.isFile()) return;
-
-      const file = resolve(dirent.parentPath, dirent.name);
-      this.link(file);
-    });
+  isIndex(name) {
+    return this.#conf.indices.some(index => name.endsWith(index));
   }
 
-  entries() {
-    const entries = [];
-    const nodes = [["", this.#root]];
+  async scan(root = this.#conf.root) {
+    this.#conf.root = root;
 
-    while (nodes.length) {
-      const [path, node] = nodes.shift();
+    const dirs = [root];
 
-      for (const key in node) {
-        const value = node[key];
-        const route = path ? `${path}/${key}` : key;
+    while (dirs.length) {
+      const dir = dirs.shift();
+      const dirents = await readdir(dir, { withFileTypes: true });
 
-        if (typeof value === "string") {
-          entries.push([route, value]);
-        } else {
-          nodes.push([route, value]);
+      for (const dirent of dirents) {
+        if (this.#conf?.ignore?.(dirent.name)) continue;
+
+        const path = resolve(dirent.parentPath, dirent.name);
+
+        if (dirent.isDirectory()) {
+          dirs.push(path);
+        } else if (this.#conf.types.some(ext => dirent.name.endsWith(ext))) {
+          const ext = this.#conf.types.find(type => path.endsWith(type));
+          const relativePath = relative(root, path);
+          const segments = relativePath.split(sep);
+          const name = segments.pop();
+          const base = this.isIndex(name) ? "" : basename(name, ext);
+          const pattern = ["", ...segments, base].join("/");
+
+          this.#entries[pattern] = {
+            pattern,
+            destination: path,
+          };
         }
       }
     }
-
-    return entries;
   }
 
-  match(route) {
-    const url = new URL(route, "file://");
+  async resolve(pattern) {
+    const entry = this.#entries[pattern];
+    const path = entry.pattern;
+    const route = { ...entry, path };
 
-    const segments = url.pathname
-      .trim()
-      .split("/")
-      .filter(segment => segment !== "");
+    const page = await exec(entry.destination, { route });
 
-    if (!url.pathname.endsWith("/")) {
-      const name = segments.at(-1);
-      const rest = segments.slice(0, -1);
+    return [{ ...page, route }];
+  }
 
-      const node = until(
-        ext => get(this.#root, [...rest, `${name}${ext}`]),
-        this.#config.types
-      );
+  entries() {
+    return Object.entries(this.#entries);
+  }
 
-      if (isString(node)) return node;
+  match(reqUrl) {
+    const url = new URL(reqUrl, "file://");
+    const path = url.pathname.replace(/^\/(.*)\/$/, "/$1");
+    const entry = this.#entries[path];
+
+    if (entry) {
+      return { ...entry, path };
     }
-
-    const node = until(
-      name => get(this.#root, [...segments, name]),
-      this.#config.indices
-    );
-
-    if (isString(node)) return node;
   }
 }

@@ -1,4 +1,12 @@
+import { join, extname, basename } from "node:path";
+import { cp } from "node:fs/promises";
+
 import { createServer } from "./dev-server/server.js";
+
+import Router from "./router.js";
+import Bundler from "./bundler.js";
+import Pipeline, { write } from "./pipeline.js";
+import { transform } from "./literals/style.js";
 
 export const serve = async conf => {
   const server = createServer();
@@ -7,51 +15,67 @@ export const serve = async conf => {
 };
 
 export const build = async conf => {
-  console.log("...build not implemented, yet");
-  // Code idea:
-  // const router = new Router(conf?.router);
-  // const bundler = new StyleBundler(conf);
-  // const pipeline = new AssetPipeline(conf?.dir?.out);
+  const router = new Router({ root: conf.in });
+  const bundler = new Bundler();
+  const pipeline = new Pipeline();
 
-  // const generations = [];
-  // const deferredTasks = [];
+  await router.scan();
 
-  // const generate = async ([route, src], { doc, styles }) => {
-  //   const walker = new DocumentWalker(document);
-  //   const injections = bundler.registerInjector(walker, ...styles);
-  //   const replacements = [];
-  //   walker.on("link[rel=stylesheet][href]", ({ attributes }) => {
-  //     const replacement = pipeline
-  //       .processFile(attributes.href)
-  //       .on("hashed", ({ path }) => (attributes.href = path));
-  //     replacements.push(replacement);
-  //   });
-  //   walker.on("img[src]", async ({ attributes }) => {
-  //     const replacement = pipeline
-  //       .processFile(attributes.src)
-  //       .on("hashed", ({ path }) => (attributes.src = path));
-  //     replacements.push(replacement);
-  //   });
-  //   walker.traverse();
-  //   await Promise.all([...injections, ...replacements]);
-  //   const src = join(conf.dir.routes, `${route}.html`);
-  //   const html = render(document);
-  //   return pipeline.process(html, { src });
-  // };
+  const deferred = [];
+  const processed = [];
 
-  // await router.scan(conf?.dir?.pages);
+  const generate = async ({ doc, styles, route }) => {
+    bundler.injectStyle(doc, ...styles);
 
-  // for (const [route, path] of router.entries()) {
-  //   const routingResult = await exec(path, {
-  //     url: { pathname: route },
-  //   });
+    const src = route.destination;
+    const dest = join(
+      process.cwd(),
+      conf?.out ?? "dist",
+      route.path,
+      "index.html"
+    );
 
-  //   if (routingResult.styles.some(({ bundle }) => isGlobalBundle(bundle))) {
-  //     deferredTasks.push([route, routingResult]);
-  //   } else {
-  //     generations.push(generate([route, path], routingResult));
-  //   }
-  // }
+    const links = doc.querySelectorAll("link[rel=stylesheet][href]");
+    processed.push(
+      ...links.map(async node => {
+        const src = node.getAttribute("href");
+        const ext = extname(src);
+        const newSrc = `${src.slice(0, src.length - ext.length)}.css`;
+        node.setAttribute("href", newSrc);
 
-  // return Promise.all(generations);
+        const result = await transform(null, { src });
+        const dest = join("dist", newSrc);
+
+        await write(dest, result.source);
+      })
+    );
+
+    return pipeline.process(src, dest, doc.toString());
+  };
+
+  processed.push(
+    cp(conf?.static ?? "public", conf?.out ?? "dist", {
+      recursive: true,
+    }).catch(() => {
+      console.warn("static folder doesnt exist");
+    })
+  );
+
+  for (const [pattern] of router.entries()) {
+    const pages = await router.resolve(pattern);
+
+    for (const page of pages) {
+      if (page.styles.some(s => s.bundle?.startsWith?.("/"))) {
+        deferred.push(page);
+      } else {
+        processed.push(generate(page));
+      }
+    }
+  }
+
+  for (const page of deferred) {
+    processed.push(generate(page));
+  }
+
+  return Promise.all(processed);
 };

@@ -30,18 +30,16 @@ export const createServer = conf => {
   const router = new Router();
 
   server.on("request", async (req, res) => {
-    const componentPath = router.match(req.url);
+    const route = router.match(req.url);
 
-    if (componentPath) {
+    if (route) {
       let doc;
-      const componentDir = dirname(componentPath);
+      const componentDir = dirname(route.destination);
 
       try {
         let styles;
 
-        ({ doc, styles } = await exec(componentPath, {
-          url: { pathname: req.url },
-        }));
+        ({ doc, styles } = await exec(route.destination, { route }));
 
         const node =
           doc.querySelector("head") ||
