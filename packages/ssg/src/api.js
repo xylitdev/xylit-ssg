@@ -1,4 +1,4 @@
-import { join, extname, basename } from "node:path";
+import { join, extname } from "node:path";
 import { cp } from "node:fs/promises";
 
 import { createServer } from "./dev-server/server.js";
