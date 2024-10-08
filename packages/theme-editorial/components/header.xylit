@@ -38,7 +38,7 @@ export default html`
 style({ lang: "scss", type: "scoped" })/*scss*/ `
   @use "sass:math";
 
-  @import "assets/sass/utils.scss";
+  @import "utils.scss";
  
 
   /* Header */

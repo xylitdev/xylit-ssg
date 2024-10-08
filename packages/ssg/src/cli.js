@@ -1,12 +1,11 @@
 import { join } from "node:path";
 import { program } from "commander";
 
-const configPath = join(process.cwd(), "xylit.config.js");
+import * as api from "./api.js";
+import { setConfig } from "./ssg.js";
+import { configPath, setConfigPath } from "./processor.js";
 
-const [{ default: conf }, api] = await Promise.all([
-  import(configPath).catch(() => ({})),
-  import("./api.js"),
-]);
+setConfigPath(join(process.cwd(), "xylit.config.js"));
 
 program
   .name("ssg")
@@ -15,10 +14,14 @@ program
   .option("--serve", "run the dev server")
   .option("--build", "generate the website")
   .action(async ({ serve, build }) => {
+    const { default: config } = await import(configPath).catch(() => ({}));
+
+    setConfig(config);
+
     if (serve) {
-      await api.serve(conf);
+      await api.serve(config);
     } else if (build) {
-      await api.build(conf);
+      await api.build(config);
       process.exit();
     }
   })

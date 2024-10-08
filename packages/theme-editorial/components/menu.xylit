@@ -42,7 +42,7 @@ export default ({ props: { items }, url }) => html`
 `;
 
 style({ lang: "scss", type: "scoped" })/*scss*/ `
-  @import "assets/sass/utils.scss";
+  @import "utils.scss";
 
   #menu {
     ul {

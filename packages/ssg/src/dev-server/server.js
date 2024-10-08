@@ -21,8 +21,8 @@ import Server500 from "./server-500.xylit";
 export const createServer = conf => {
   conf = defaults(conf, {
     port: 8080,
-    pages: process.cwd(),
-    static: process.cwd(),
+    in: resolve(process.cwd(), "pages"),
+    static: resolve(process.cwd(), "public"),
   });
 
   const server = createHttpServer();
@@ -149,7 +149,7 @@ export const createServer = conf => {
     ignored: file => file.includes("node_modules"),
   }).on("all", async (event, file) => {
     kill();
-    await router.scan(conf.pages);
+    await router.scan(conf.in);
 
     const fileUrl = pathToFileURL(file).toString();
 
@@ -168,7 +168,7 @@ export const createServer = conf => {
     livereload,
 
     async listen() {
-      await router.scan(conf.pages);
+      await router.scan(conf.in);
       server.listen(conf.port);
       console.log(`http://localhost:${conf.port}`);
     },

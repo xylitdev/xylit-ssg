@@ -9,7 +9,7 @@ export default html`
 `;
 
 style({ lang: "scss", type: "scoped" })/*scss*/ `
-  @import "assets/sass/utils.scss";
+  @import "utils.scss";
 
   #footer {
     .copyright {

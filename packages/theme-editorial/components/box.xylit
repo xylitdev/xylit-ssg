@@ -6,7 +6,7 @@ style({ lang: "scss", type: "scoped" })/*scss*/ `
   @use "sass:color";
   @use "sass:math";
 
-  @import "assets/sass/utils.scss";
+  @import "utils.scss";
 
   .box {
     border-radius: _size(border-radius);

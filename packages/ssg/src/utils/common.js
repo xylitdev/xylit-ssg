@@ -16,7 +16,7 @@ export const isString = file => typeof file === "string";
 export const defaults = (obj, defaultValues) => {
   const result = { ...defaultValues };
 
-  Object.entries(obj).forEach(([key, value]) => {
+  Object.entries({ ...obj }).forEach(([key, value]) => {
     if (value === undefined) return;
 
     result[key] = value;

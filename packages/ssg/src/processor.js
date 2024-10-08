@@ -2,6 +2,11 @@ import { parse } from "node-html-parser";
 import { fork } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
+export let configPath;
+
+export const setConfigPath = path => {
+  configPath = path;
+};
 let childProcess;
 
 const createChildProcess = () => {
@@ -28,26 +33,31 @@ export const exec = async (path, context) => {
     });
 
     childProcess.on("exit", reject);
-    childProcess.send({ path, context });
+    childProcess.send({ path, context, configPath });
   });
 };
 
-process.on("message", async ({ path, context }) => {
-  const [{ context: ctx, on, off }, { default: Component }] = await Promise.all(
-    [import("./ssg.js"), import(path)]
-  );
+process.on("message", async ({ path, context, configPath }) => {
+  const [ssg, config] = await Promise.all([
+    import("./ssg.js"),
+    import(configPath).catch(() => ({ default: {} })),
+  ]);
+
+  ssg.setConfig(config.default);
+
+  const { default: Component } = await import(path);
 
   const styles = [];
-  Object.assign(ctx, context);
+  Object.assign(ssg.context, context);
 
   const onRender = ({ meta }) => {
     styles.push(...meta.styleDefinitions);
   };
 
-  on("component:render", onRender);
+  ssg.on("component:render", onRender);
 
   Component().then(async content => {
-    off("component:render", onRender);
+    ssg.off("component:render", onRender);
 
     process.send({
       content,
