@@ -1,5 +1,6 @@
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import * as path from "node:path";
 
 import { parse } from "acorn";
 import * as walk from "acorn-walk";
@@ -24,6 +25,19 @@ const wrapDefaultExport = (source, ast) => {
     },
   });
 };
+
+export async function resolve(specifier, context, nextResolve) {
+  if (specifier == "xylit:config") {
+    const realFile = path.resolve(process.cwd(), "xylit.config.js");
+    const virtualFile = "data:text/javascript, export default {};";
+
+    return stat(realFile)
+      .then(() => nextResolve(realFile, context))
+      .catch(() => nextResolve(virtualFile, context));
+  }
+
+  return nextResolve(specifier, context);
+}
 
 export async function load(url, context, next) {
   if (!url.endsWith(".xylit")) return next(url, context);

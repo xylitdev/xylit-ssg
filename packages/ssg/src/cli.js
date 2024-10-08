@@ -1,9 +1,8 @@
-import { join } from "node:path";
+import config from "xylit:config";
+
 import { program } from "commander";
 
 import * as api from "./api.js";
-import { setConfig } from "./ssg.js";
-import { configPath, setConfigPath } from "./processor.js";
 
 program
   .name("ssg")
@@ -15,10 +14,6 @@ program
   .alias("")
   .option("-p, --port <number>", "port number", 8080)
   .action(async ({ port }) => {
-    setConfigPath(join(process.cwd(), "xylit.config.js"));
-    const { default: config } = await import(configPath).catch(() => ({}));
-    setConfig(config);
-
     await api.serve(config);
   });
 
@@ -26,10 +21,6 @@ program
   .command("build")
   .argument("[input]")
   .action(async () => {
-    setConfigPath(join(process.cwd(), "xylit.config.js"));
-    const { default: config } = await import(configPath).catch(() => ({}));
-    setConfig(config);
-
     await api.build(config);
     process.exit();
   });

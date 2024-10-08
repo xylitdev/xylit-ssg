@@ -8,12 +8,6 @@ import { isFunction, isObject } from "./utils/common.js";
 
 const eventEmitter = new EventEmitter();
 
-export let config = {};
-
-export const setConfig = conf => {
-  config = conf;
-};
-
 const createSlotApi = slots => {
   const slot = (...args) => slot["default"]?.(...args);
 

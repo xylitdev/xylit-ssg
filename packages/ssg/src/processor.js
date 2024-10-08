@@ -2,11 +2,6 @@ import { parse } from "node-html-parser";
 import { fork } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-export let configPath;
-
-export const setConfigPath = path => {
-  configPath = path;
-};
 let childProcess;
 
 const createChildProcess = () => {
@@ -33,19 +28,15 @@ export const exec = async (path, context) => {
     });
 
     childProcess.on("exit", reject);
-    childProcess.send({ path, context, configPath });
+    childProcess.send({ path, context });
   });
 };
 
-process.on("message", async ({ path, context, configPath }) => {
-  const [ssg, config] = await Promise.all([
+process.on("message", async ({ path, context }) => {
+  const [ssg, { default: Component }] = await Promise.all([
     import("./ssg.js"),
-    import(configPath).catch(() => ({ default: {} })),
+    import(path),
   ]);
-
-  ssg.setConfig(config.default);
-
-  const { default: Component } = await import(path);
 
   const styles = [];
   Object.assign(ssg.context, context);

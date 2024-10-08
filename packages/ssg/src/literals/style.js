@@ -1,4 +1,5 @@
 import { resolve } from "node:path";
+import config from "xylit:config";
 
 import postcss from "postcss";
 import PostcssModulesPlugin from "postcss-modules";
@@ -6,8 +7,6 @@ import PostcssScopedPlugin from "../postcss/scoped-plugin.js";
 import { compileAsync, compileStringAsync } from "sass";
 
 import { isArray } from "../utils/common.js";
-
-import { config } from "../ssg.js";
 
 // potential fix for: https://github.com/lit/lit-element/issues/637?
 // lets see if i am running into some problems
