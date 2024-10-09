@@ -9,8 +9,8 @@ import MagicString from "magic-string";
 const injectImports = (source, ast) => {
   source.prepend(
     [
-      'import * as Xylit from "@xylit/ssg";',
-      "const { html, style } = Xylit.init(import.meta);",
+      'import * as SSG from "@xylit/ssg";',
+      "const { html, style } = SSG.init(import.meta);",
       "export const meta = import.meta;",
       "",
     ].join("\n")
@@ -20,15 +20,15 @@ const injectImports = (source, ast) => {
 const wrapDefaultExport = (source, ast) => {
   walk.simple(ast, {
     ExportDefaultDeclaration({ declaration: { start, end } }) {
-      source.appendLeft(start, "Xylit.defineComponent(import.meta, () => (");
+      source.appendLeft(start, "SSG.defineComponent(import.meta, () => (");
       source.appendRight(end, "));");
     },
   });
 };
 
 export async function resolve(specifier, context, nextResolve) {
-  if (specifier == "xylit:config") {
-    const realFile = path.resolve(process.cwd(), "xylit.config.js");
+  if (specifier == "ssg:config") {
+    const realFile = path.resolve(process.cwd(), "ssg.config.js");
     const virtualFile = "data:text/javascript, export default {};";
 
     return stat(realFile)
@@ -40,7 +40,7 @@ export async function resolve(specifier, context, nextResolve) {
 }
 
 export async function load(url, context, next) {
-  if (!url.endsWith(".xylit")) return next(url, context);
+  if (!url.endsWith(".ssg.js")) return next(url, context);
 
   const path = fileURLToPath(url);
   const source = new MagicString(await readFile(path, { encoding: "utf-8" }));

@@ -1,5 +1,5 @@
 import { resolve } from "node:path";
-import config from "xylit:config";
+import config from "ssg:config";
 
 import postcss from "postcss";
 import PostcssModulesPlugin from "postcss-modules";

@@ -1,4 +1,4 @@
-import Shell from "../components/shell.xylit";
+import Shell from "../components/shell.ssg.js";
 
 const features = [
   { icon: "fa-gem", title: "Portitor ullamcorper" },

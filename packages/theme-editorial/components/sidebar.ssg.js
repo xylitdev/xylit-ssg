@@ -1,5 +1,5 @@
-import Footer from "./footer.xylit";
-import Menu from "./menu.xylit";
+import Footer from "./footer.ssg.js";
+import Menu from "./menu.ssg.js";
 
 export default html`
   <div id="sidebar">

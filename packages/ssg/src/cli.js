@@ -1,4 +1,4 @@
-import config from "xylit:config";
+import config from "ssg:config";
 
 import { program } from "commander";
 

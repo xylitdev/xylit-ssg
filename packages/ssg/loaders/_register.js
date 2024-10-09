@@ -1,3 +1,3 @@
 import { register } from "node:module";
 
-register("./xylit-loader.js", import.meta.url);
+register("./ssg-loader.js", import.meta.url);

@@ -2,11 +2,11 @@
 
 This package contains the core functionality of [Xylit SSG](../../).
 
-## `.xylit`-Format
+## `.ssg.js`-Format
 
-Xylit files are JavaScript files that are slightly transformed before execution. This is necessary in order to perform a dynamic code analysis.
+SSG files are JavaScript files that are slightly transformed before execution. This is necessary in order to perform a dynamic code analysis.
 
-Consider this `xylit`-file:
+Consider this SSG file
 
 ```js
 const css = style.module.css`
@@ -21,8 +21,8 @@ export default html`<h1 class=${css.headline}>Hello Xylit</h1>`;
 Converted, it looks similar like this:
 
 ```js
-import * as Xylit from "@xylit/ssg";
-const { html, style } = Xylit.init(import.meta);
+import * as SSG from "@xylit/ssg";
+const { html, style } = SSG.init(import.meta);
 export const meta = import.meta;
 
 const css = style.module.css`
@@ -31,7 +31,7 @@ const css = style.module.css`
   }
 `;
 
-export default Xylit.defineComponent(import.meta, () =>
+export default SSG.defineComponent(import.meta, () =>
   html`<h1 class=${css.headline}>Hello Xylit</h1>`;
 );
 ```

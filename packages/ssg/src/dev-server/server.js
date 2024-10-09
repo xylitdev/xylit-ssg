@@ -15,8 +15,8 @@ import { defaults } from "../utils/common.js";
 import { fileExists } from "../utils/fs.js";
 
 import { createLivereload } from "./livereload.js";
-import Server404 from "./server-404.xylit";
-import Server500 from "./server-500.xylit";
+import Server404 from "./server-404.ssg.js";
+import Server500 from "./server-500.ssg.js";
 
 export const createServer = conf => {
   conf = defaults(conf, {

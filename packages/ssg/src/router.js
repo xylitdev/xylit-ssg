@@ -12,8 +12,8 @@ export default class Router {
     this.#entries = {};
     this.#conf = {
       root: conf?.root ?? resolve(process.cwd(), "pages"),
-      indices: [conf?.index ?? "index.xylit"].flat(),
-      types: [conf?.type ?? ".xylit"].flat(),
+      indices: [conf?.index ?? "index.ssg.js"].flat(),
+      types: [conf?.type ?? ".ssg.js"].flat(),
       ignore: conf?.ignore ?? (name => name.startsWith("_")),
     };
   }

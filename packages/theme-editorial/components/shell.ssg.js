@@ -1,5 +1,5 @@
-import Header from "./header.xylit";
-import Sidebar from "./sidebar.xylit";
+import Header from "./header.ssg.js";
+import Sidebar from "./sidebar.ssg.js";
 
 export default ({ props: { title }, slot, lang }) => html`
   <!DOCTYPE html>

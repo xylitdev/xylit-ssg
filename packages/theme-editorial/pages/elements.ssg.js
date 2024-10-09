@@ -1,5 +1,5 @@
-import Shell from "../components/shell.xylit";
-import Box from "../components/box.xylit";
+import Shell from "../components/shell.ssg.js";
+import Box from "../components/box.ssg.js";
 
 export default Shell(
   { title: "Elements" },
