@@ -79,7 +79,7 @@ export default html`
   </div>
 `;
 
-style({ lang: "scss", type: "" })/*scss*/ `
+style.scss`
   @use "sass:color";
   @use "sass:math";
 

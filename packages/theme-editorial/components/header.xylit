@@ -35,7 +35,7 @@ export default html`
   </header>
 `;
 
-style({ lang: "scss", type: "scoped" })/*scss*/ `
+style.scoped.scss`
   @use "sass:math";
 
   @import "utils.scss";

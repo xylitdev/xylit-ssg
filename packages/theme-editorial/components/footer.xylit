@@ -8,7 +8,7 @@ export default html`
   </footer>
 `;
 
-style({ lang: "scss", type: "scoped" })/*scss*/ `
+style.scoped.scss`
   @import "utils.scss";
 
   #footer {

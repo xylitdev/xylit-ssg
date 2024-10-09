@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import EventEmitter from "node:events";
 
 import { createHtmlLiteral } from "./literals/html.js";
-import { createStyleLiteral } from "./literals/style.js";
+import { createStyleApi } from "./literals/style.js";
 
 import { isFunction, isObject } from "./utils/common.js";
 
@@ -30,7 +30,7 @@ export const init = meta => {
 
   return {
     html: createHtmlLiteral(meta),
-    style: createStyleLiteral(meta),
+    style: createStyleApi(meta),
   };
 };
 

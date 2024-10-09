@@ -6,11 +6,7 @@ import PostcssModulesPlugin from "postcss-modules";
 import PostcssScopedPlugin from "../postcss/scoped-plugin.js";
 import { compileAsync, compileStringAsync } from "sass";
 
-import { isArray } from "../utils/common.js";
-
-// potential fix for: https://github.com/lit/lit-element/issues/637?
-// lets see if i am running into some problems
-const raw = (strings, ...values) => String.raw({ raw: strings.raw }, ...values);
+import { isArray, defineGetters } from "../utils/common.js";
 
 const transformSass = async input => {
   const langReg = /(sass|scss)$/;
@@ -89,15 +85,14 @@ export const transform = async (source, options) =>
     })
   );
 
-export const createStyleLiteral = meta => {
-  const callTransform = (source, options) => {
-    const exports = {};
+const createLiteral =
+  ({ meta, lang, type }) =>
+  (strings, ...values) => {
+    // potential fix for: https://github.com/lit/lit-element/issues/637?
+    const source = String.raw({ raw: strings.raw }, ...values);
 
-    const result = transform(source, {
-      hash: meta.urlHash,
-      ...options,
-      src: options.src && resolve(meta.dirname, options.src),
-    });
+    const exports = {};
+    const result = transform(source, { lang, type, hash: meta.urlHash });
 
     meta.styleDefinitions.push(result);
     result.then(result => Object.assign(exports, result.exports));
@@ -105,14 +100,13 @@ export const createStyleLiteral = meta => {
     return exports;
   };
 
-  const callLiteral = (strings, values, options) =>
-    callTransform(raw(strings, ...values), { type: "scoped", ...options });
-
-  return (arg0, ...rest) => {
-    return isArray(arg0)
-      ? callLiteral(arg0, rest)
-      : arg0?.src
-      ? callTransform(null, arg0)
-      : (strings, ...values) => callLiteral(strings, values, arg0);
+export const createStyleApi = meta => {
+  const getters = {
+    module: conf => defineGetters({ ...conf, type: "module" }, getters),
+    scoped: conf => defineGetters({ ...conf, type: "scoped" }, getters),
+    css: conf => createLiteral({ ...conf, meta, lang: "css" }),
+    scss: conf => createLiteral({ ...conf, meta, lang: "scss" }),
   };
+
+  return defineGetters(bundle => defineGetters({ bundle }, getters), getters);
 };

@@ -41,7 +41,7 @@ export default ({ props: { items }, route }) => html`
   </nav>
 `;
 
-style({ lang: "scss", type: "scoped" })/*scss*/ `
+style.scoped.scss`
   @import "utils.scss";
 
   #menu {
