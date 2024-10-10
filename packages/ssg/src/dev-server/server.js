@@ -9,7 +9,7 @@ import mime from "mime";
 
 import { addDependency, dependantsOf } from "../dependencies.js";
 import Router from "../router.js";
-import { exec, kill } from "../processor.js";
+import { exec, kill } from "../runtime.js";
 import { transform } from "../literals/style.js";
 import { defaults } from "../utils/common.js";
 import { fileExists } from "../utils/fs.js";

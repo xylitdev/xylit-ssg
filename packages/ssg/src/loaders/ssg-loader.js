@@ -2,7 +2,7 @@ import { stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import * as path from "node:path";
 
-import { compile } from "../src/compiler.js";
+import { compile } from "../compiler.js";
 
 export async function resolve(specifier, context, nextResolve) {
   if (specifier == "ssg:config") {

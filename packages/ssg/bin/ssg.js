@@ -7,9 +7,5 @@ const [nodeBin, module, ...args] = process.argv;
 const path = fileURLToPath(import.meta.resolve("../src/cli.js"));
 
 fork(path, args, {
-  execArgv: [
-    ...process.execArgv,
-    "--import",
-    "@xylit/ssg/loaders/_register.js",
-  ],
+  execArgv: [...process.execArgv, "--import", "@xylit/ssg"],
 }).once("close", process.exit);

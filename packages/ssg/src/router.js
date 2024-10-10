@@ -2,7 +2,7 @@ import { readdir } from "node:fs/promises";
 import { basename, relative, resolve, sep } from "node:path";
 
 import { set, unset } from "./utils/common.js";
-import { exec } from "./processor.js";
+import { exec } from "./runtime.js";
 
 export default class Router {
   #conf;

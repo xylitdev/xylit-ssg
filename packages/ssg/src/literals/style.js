@@ -1,4 +1,4 @@
-import { resolve } from "node:path";
+import { lazy } from "../utils/lazy.js";
 import config from "ssg:config";
 
 import postcss from "postcss";
@@ -90,23 +90,21 @@ const createLiteral =
   (strings, ...values) => {
     // potential fix for: https://github.com/lit/lit-element/issues/637?
     const source = String.raw({ raw: strings.raw }, ...values);
-
-    const exports = {};
     const result = transform(source, { lang, type, hash: meta.urlHash });
 
     meta.styleDefinitions.push(result);
-    result.then(result => Object.assign(exports, result.exports));
 
-    return exports;
+    return lazy(result.then(r => r.exports));
   };
 
 export const createStyleApi = meta => {
-  const getters = {
-    module: conf => defineGetters({ ...conf, type: "module" }, getters),
-    scoped: conf => defineGetters({ ...conf, type: "scoped" }, getters),
-    css: conf => createLiteral({ ...conf, meta, lang: "css" }),
-    scss: conf => createLiteral({ ...conf, meta, lang: "scss" }),
-  };
+  const addGetters = obj =>
+    defineGetters(obj, {
+      module: conf => addGetters({ ...conf, type: "module" }),
+      scoped: conf => addGetters({ ...conf, type: "scoped" }),
+      css: conf => createLiteral({ ...conf, meta, lang: "css" }),
+      scss: conf => createLiteral({ ...conf, meta, lang: "scss" }),
+    });
 
-  return defineGetters(bundle => defineGetters({ bundle }, getters), getters);
+  return addGetters(bundle => addGetters({ bundle }));
 };

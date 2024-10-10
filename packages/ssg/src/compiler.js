@@ -7,7 +7,7 @@ import MagicString from "magic-string";
 const injectImports = (source, ast) => {
   source.prepend(
     [
-      'import * as SSG from "@xylit/ssg";',
+      'import * as SSG from "@xylit/ssg/runtime";',
       "const { html, style } = SSG.init(import.meta);",
       "export const meta = import.meta;",
       "",

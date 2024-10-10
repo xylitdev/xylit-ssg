@@ -2,7 +2,6 @@
   "name": "@xylit/ssg",
   "version": "0.0.1",
   "description": "Xylit Static Site Generator",
-  "main": "src/ssg.js",
   "type": "module",
   "author": "",
   "license": "ISC",
@@ -26,5 +25,9 @@
   },
   "bin": {
     "ssg": "bin/ssg.js"
+  },
+  "exports": {
+    ".": "./src/ssg.js",
+    "./runtime": "./src/runtime.js"
   }
 }
