@@ -1,7 +1,6 @@
 import { createReadStream } from "node:fs";
 import { createServer as createHttpServer } from "node:http";
-import { join, dirname, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { join, resolve } from "node:path";
 
 import { watch } from "chokidar";
 import { parse } from "node-html-parser";
@@ -22,8 +21,6 @@ const routeHandler = async (req, res, { livereload, router }) => {
 
   if (!route) return;
 
-  const componentDir = dirname(route.destination);
-
   const { doc, styles } = await exec(route.destination, { route });
 
   const node =
@@ -36,13 +33,6 @@ const routeHandler = async (req, res, { livereload, router }) => {
     "beforeend",
     `<style>${styles.map(s => s.source).join("\n")}</style>`
   );
-
-  doc.querySelectorAll("link[rel=stylesheet]")?.forEach?.(node => {
-    const href = node.getAttribute("href");
-    const filePath = resolve(componentDir, href);
-
-    node.setAttribute("data-dependency", pathToFileURL(filePath).toString());
-  });
 
   livereload.inject(doc);
   res.setHeader("Content-Type", "text/html");
