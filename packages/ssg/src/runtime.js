@@ -1,6 +1,7 @@
+import { fork } from "node:child_process";
 import { createHash } from "node:crypto";
 import EventEmitter from "node:events";
-import { fork } from "node:child_process";
+import { register } from "node:module";
 import { fileURLToPath } from "node:url";
 
 import { parse } from "node-html-parser";
@@ -9,6 +10,11 @@ import { createHtmlLiteral } from "./literals/html.js";
 import { createStyleApi } from "./literals/style.js";
 
 import { isFunction, isObject } from "./utils/common.js";
+
+if (!import.meta.registered) {
+  register("./loaders/ssg-loader.js", import.meta.url);
+  import.meta.registered = true;
+}
 
 const eventEmitter = new EventEmitter();
 

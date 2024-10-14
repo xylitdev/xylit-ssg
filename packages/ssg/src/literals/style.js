@@ -1,5 +1,5 @@
 import { lazy } from "../utils/lazy.js";
-import config from "ssg:config";
+import config from "../config.js";
 
 import postcss from "postcss";
 import PostcssModulesPlugin from "postcss-modules";

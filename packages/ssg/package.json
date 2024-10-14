@@ -27,7 +27,6 @@
     "ssg": "bin/ssg.js"
   },
   "exports": {
-    ".": "./src/ssg.js",
-    "./runtime": "./src/runtime.js"
+    ".": "./src/runtime.js"
   }
 }

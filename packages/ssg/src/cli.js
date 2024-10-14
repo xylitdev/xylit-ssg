@@ -1,7 +1,7 @@
 import { join, extname } from "node:path";
 import { cp } from "node:fs/promises";
 
-import conf from "ssg:config";
+import conf from "./config.js";
 
 import { program } from "commander";
 
