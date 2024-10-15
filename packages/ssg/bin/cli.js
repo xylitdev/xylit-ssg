@@ -79,7 +79,10 @@ program
 
     for (const [pattern, entry] of router.entries()) {
       const route = { ...entry, path: pattern };
-      const page = await exec(entry.destination, { route });
+      const page = await exec(entry.destination, {
+        route,
+        lang: process.env.LANG,
+      });
 
       if (page.styles.some(s => s.bundle?.startsWith?.("/"))) {
         deferred.push(page);

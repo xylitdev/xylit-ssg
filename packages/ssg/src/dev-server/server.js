@@ -18,7 +18,10 @@ const routeHandler = async (req, res, { livereload, router }) => {
 
   if (!route) return;
 
-  const { doc, styles } = await exec(route.destination, { route });
+  const { doc, styles } = await exec(route.destination, {
+    route,
+    lang: process.env.LANG,
+  });
 
   const node =
     doc.querySelector("head") ||
@@ -69,7 +72,9 @@ const staticFileHandler = async (req, res, { conf }) => {
 };
 
 const notFoundHandler = async (req, res, { livereload }) => {
-  const { doc } = await exec(resolve(import.meta.dirname, './server-404.ssg.js'))
+  const { doc } = await exec(
+    resolve(import.meta.dirname, "./server-404.ssg.js")
+  );
 
   livereload.inject(doc);
   res.writeHead(404, { "Content-Type": "text/html" });
@@ -104,7 +109,9 @@ export const createServer = conf => {
       } catch (e) {
         console.error(e);
 
-        const { doc } = await exec(resolve(import.meta.dirname, './server-500.ssg.js'))
+        const { doc } = await exec(
+          resolve(import.meta.dirname, "./server-500.ssg.js")
+        );
 
         livereload.inject(doc);
         res.writeHead(500, { "Content-Type": "text/html" });

@@ -43,6 +43,10 @@ const transform = async (value, type) => {
 
       break;
     case CHILD:
+      if (value.type === "ComponentResult") {
+        return value.content;
+      }
+
       if (isFunction(value)) {
         return await value();
       }
