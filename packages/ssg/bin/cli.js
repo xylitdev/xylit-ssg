@@ -1,15 +1,16 @@
+#!/usr/bin/env node
+
 import { join, extname } from "node:path";
 import { cp } from "node:fs/promises";
 
-import conf from "./config.js";
-
 import { program } from "commander";
 
-import Router from "./router.js";
-import Bundler from "./bundler.js";
-import Pipeline, { write } from "./pipeline.js";
-import { transform } from "./literals/style.js";
-import { createServer } from "./dev-server/server.js";
+import conf from "../src/config.js";
+import Router from "../src/router.js";
+import Bundler from "../src/bundler.js";
+import Pipeline, { write } from "../src/pipeline.js";
+import { transform } from "../src/literals/style.js";
+import { createServer } from "../src/dev-server/server.js";
 
 program
   .name("ssg")

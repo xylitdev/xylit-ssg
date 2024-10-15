@@ -3,7 +3,6 @@ import { createServer as createHttpServer } from "node:http";
 import { join, resolve } from "node:path";
 
 import { watch } from "chokidar";
-import { parse } from "node-html-parser";
 import mime from "mime";
 
 import Router from "../router.js";
@@ -13,8 +12,6 @@ import { defaults } from "../utils/common.js";
 import { fileExists } from "../utils/fs.js";
 
 import { createLivereload } from "./livereload.js";
-import Server404 from "./server-404.ssg.js";
-import Server500 from "./server-500.ssg.js";
 
 const routeHandler = async (req, res, { livereload, router }) => {
   const route = router.match(req.url);
@@ -72,7 +69,8 @@ const staticFileHandler = async (req, res, { conf }) => {
 };
 
 const notFoundHandler = async (req, res, { livereload }) => {
-  const doc = await Server404().then(parse);
+  const { doc } = await exec(resolve(import.meta.dirname, './server-404.ssg.js'))
+
   livereload.inject(doc);
   res.writeHead(404, { "Content-Type": "text/html" });
   res.end(doc.toString());
@@ -106,7 +104,8 @@ export const createServer = conf => {
       } catch (e) {
         console.error(e);
 
-        const doc = await Server500().then(parse);
+        const { doc } = await exec(resolve(import.meta.dirname, './server-500.ssg.js'))
+
         livereload.inject(doc);
         res.writeHead(500, { "Content-Type": "text/html" });
         res.end(doc.toString());
