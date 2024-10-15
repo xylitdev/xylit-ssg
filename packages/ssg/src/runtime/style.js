@@ -1,12 +1,11 @@
-import { lazy } from "../utils/lazy.js";
-import config from "../config.js";
-
 import postcss from "postcss";
 import PostcssModulesPlugin from "postcss-modules";
-import PostcssScopedPlugin from "../postcss/scoped-plugin.js";
 import { compileAsync, compileStringAsync } from "sass";
 
+import config from "../config.js";
+import PostcssScopedPlugin from "../lib/postcss-scoped-plugin.js";
 import { isArray, defineGetters } from "../utils/common.js";
+import { lazy } from "../utils/lazy.js";
 
 const transformSass = async input => {
   const langReg = /(sass|scss)$/;

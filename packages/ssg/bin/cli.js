@@ -9,8 +9,8 @@ import conf from "../src/config.js";
 import Router from "../src/router.js";
 import Bundler from "../src/bundler.js";
 import Pipeline, { write } from "../src/pipeline.js";
-import { transform } from "../src/literals/style.js";
-import { createServer } from "../src/dev-server/server.js";
+import { transform } from "../src/runtime/style.js";
+import { createServer } from "../src/server.js";
 import { exec } from "../src/runtime.js";
 
 program

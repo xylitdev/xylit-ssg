@@ -8,9 +8,9 @@ import MagicString from "magic-string";
 const injectImports = (source, ast) => {
   source.prepend(
     [
-      'import * as SSG from "@xylit/ssg";',
-      "const { html, style } = SSG.init(import.meta);",
-      "export const meta = import.meta;",
+      'import { init as _ssgInit } from "@xylit/ssg";',
+      "const _SSG = _ssgInit(import.meta);",
+      "const { html, style } = _SSG",
       "",
     ].join("\n")
   );
@@ -19,7 +19,7 @@ const injectImports = (source, ast) => {
 const wrapDefaultExport = (source, ast) => {
   walk.simple(ast, {
     ExportDefaultDeclaration({ declaration: { start, end } }) {
-      source.appendLeft(start, "SSG.defineComponent(import.meta, () => (");
+      source.appendLeft(start, "_SSG.createComponent(() => (");
       source.appendRight(end, "));");
     },
   });

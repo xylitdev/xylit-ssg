@@ -5,15 +5,16 @@ import { fileURLToPath } from "node:url";
 
 import { parse } from "node-html-parser";
 
-import { createHtmlLiteral } from "./literals/html.js";
-import { createStyleApi } from "./literals/style.js";
-
-import { createComponent } from "./component.js";
+import { createHtmlLiteral } from "./runtime/html.js";
+import { createStyleApi } from "./runtime/style.js";
+import { createComponent } from "./runtime/component.js";
 
 if (!import.meta.registered) {
-  register("./loaders/ssg-loader.js", import.meta.url);
+  register("./runtime/loaders/ssg-loader.js", import.meta.url);
   import.meta.registered = true;
 }
+
+let childProcess;
 
 export const init = meta => {
   meta.styleDefinitions = [];
@@ -24,16 +25,8 @@ export const init = meta => {
   return {
     html: createHtmlLiteral(meta),
     style: createStyleApi(meta),
+    createComponent: createComponent.bind(undefined, meta),
   };
-};
-
-export const defineComponent = createComponent;
-
-let childProcess;
-
-export const kill = () => {
-  childProcess?.kill?.();
-  childProcess = undefined;
 };
 
 export const exec = async (path, context) => {
@@ -55,11 +48,14 @@ export const exec = async (path, context) => {
   });
 };
 
+export const kill = () => {
+  childProcess?.kill?.();
+  childProcess = undefined;
+};
+
 process.on("message", async ({ path, context }) => {
   const { default: Component } = await import(path);
-
   Object.assign(Component, context);
-
   const result = await Component();
   process.send(result);
 });

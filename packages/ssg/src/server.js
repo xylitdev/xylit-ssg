@@ -5,13 +5,13 @@ import { join, resolve } from "node:path";
 import { watch } from "chokidar";
 import mime from "mime";
 
-import Router from "../router.js";
-import { exec, kill } from "../runtime.js";
-import { transform } from "../literals/style.js";
-import { defaults } from "../utils/common.js";
-import { fileExists } from "../utils/fs.js";
+import Router from "./router.js";
+import { exec, kill } from "./runtime.js";
+import { transform } from "./runtime/style.js";
+import { defaults } from "./utils/common.js";
+import { fileExists } from "./utils/fs.js";
 
-import { createLivereload } from "./livereload.js";
+import { createLivereload } from "./server/livereload.js";
 
 const routeHandler = async (req, res, { livereload, router }) => {
   const route = router.match(req.url);
