@@ -11,6 +11,7 @@ import Bundler from "../src/bundler.js";
 import Pipeline, { write } from "../src/pipeline.js";
 import { transform } from "../src/literals/style.js";
 import { createServer } from "../src/dev-server/server.js";
+import { exec } from "../src/runtime.js";
 
 program
   .name("ssg")
@@ -76,15 +77,14 @@ program
       })
     );
 
-    for (const [pattern] of router.entries()) {
-      const pages = await router.resolve(pattern);
+    for (const [pattern, entry] of router.entries()) {
+      const route = { ...entry, path: pattern };
+      const page = await exec(entry.destination, { route });
 
-      for (const page of pages) {
-        if (page.styles.some(s => s.bundle?.startsWith?.("/"))) {
-          deferred.push(page);
-        } else {
-          processed.push(generate(page));
-        }
+      if (page.styles.some(s => s.bundle?.startsWith?.("/"))) {
+        deferred.push(page);
+      } else {
+        processed.push(generate(page));
       }
     }
 

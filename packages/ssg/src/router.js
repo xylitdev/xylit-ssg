@@ -2,7 +2,6 @@ import { readdir } from "node:fs/promises";
 import { basename, relative, resolve, sep } from "node:path";
 
 import { set, unset } from "./utils/common.js";
-import { exec } from "./runtime.js";
 
 export default class Router {
   #conf;
@@ -76,16 +75,6 @@ export default class Router {
         }
       }
     }
-  }
-
-  async resolve(pattern) {
-    const entry = this.#entries[pattern];
-    const path = entry.pattern;
-    const route = { ...entry, path };
-
-    const page = await exec(entry.destination, { route });
-
-    return [{ ...page, route }];
   }
 
   entries() {
