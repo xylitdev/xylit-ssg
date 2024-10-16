@@ -3,11 +3,13 @@
 import { join, extname } from "node:path";
 import { cp } from "node:fs/promises";
 
+import { exec } from "@xylit/ssg";
+
 import conf from "./generator/config.js";
 import Router from "./generator/router.js";
 import Bundler from "./generator/bundler.js";
 import Pipeline, { write } from "./generator/pipeline.js";
-import { exec } from "./runtime.js";
+// TODO: server shoulnd access runtine sub module
 import { transform } from "./runtime/style.js";
 import { createServer } from "./server/server.js";
 

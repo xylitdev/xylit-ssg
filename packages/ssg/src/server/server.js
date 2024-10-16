@@ -2,11 +2,13 @@ import { createReadStream } from "node:fs";
 import { createServer as createHttpServer } from "node:http";
 import { join, resolve } from "node:path";
 
+import { exec, kill } from "@xylit/ssg";
+
 import { watch } from "chokidar";
 import mime from "mime";
 
 import Router from "../generator/router.js";
-import { exec, kill } from "../runtime.js";
+// TODO: server shoulnd access runtine sub module
 import { transform } from "../runtime/style.js";
 import { defaults } from "../utils/common.js";
 import { fileExists } from "../utils/fs.js";

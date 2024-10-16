@@ -5,12 +5,12 @@ import { fileURLToPath } from "node:url";
 
 import { parse } from "node-html-parser";
 
-import { createHtmlLiteral } from "./runtime/html.js";
-import { createStyleApi } from "./runtime/style.js";
-import { createComponent } from "./runtime/component.js";
+import { createHtmlLiteral } from "./html.js";
+import { createStyleApi } from "./style.js";
+import { createComponent } from "./component.js";
 
 if (!import.meta.registered) {
-  register("./runtime/loaders/ssg-loader.js", import.meta.url);
+  register("./loaders/ssg-loader.js", import.meta.url);
   import.meta.registered = true;
 }
 
