@@ -1,7 +1,7 @@
 import { readdir } from "node:fs/promises";
 import { basename, relative, resolve, sep } from "node:path";
 
-import { set, unset } from "./utils/common.js";
+import { set, unset } from "../utils/common.js";
 
 export default class Router {
   #conf;
