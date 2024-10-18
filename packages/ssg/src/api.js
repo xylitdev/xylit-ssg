@@ -1,9 +1,9 @@
-#!/usr/bin/env node
-
-import { join, extname } from "node:path";
+import { join, extname, resolve } from "node:path";
 import { cp } from "node:fs/promises";
 
-import { exec } from "@xylit/ssg";
+import { exec, kill } from "@xylit/ssg";
+import { watch } from "chokidar";
+import mime from "mime";
 
 import conf from "./generator/config.js";
 import Router from "./generator/router.js";
@@ -11,10 +11,69 @@ import Bundler from "./generator/bundler.js";
 import Pipeline, { write } from "./generator/pipeline.js";
 // TODO: server shoulnd access runtine sub module
 import { transform } from "./runtime/style.js";
-import { createServer } from "./server/server.js";
+import { LiveServer } from "./server.js";
 
 export const serve = async () => {
-  const server = createServer();
+  const router = new Router();
+  const server = new LiveServer({
+    root: resolve(process.cwd(), "public"),
+    port: 8080,
+  });
+
+  await router.scan(resolve(process.cwd(), "pages"));
+
+  server.addRequestHandler(async (req, { rewriter }) => {
+    const route = router.match(req.url);
+
+    if (!route) return;
+
+    const { doc, styles } = await exec(route.destination, {
+      route,
+      lang: process.env.LANG,
+    });
+
+    rewriter.on("head", {
+      element(element) {
+        for (const style of styles) {
+          element.append(`<style>${style.source}</style>`, { html: true });
+        }
+      },
+    });
+
+    return new Response(doc.toString(), {
+      headers: { "Content-Type": "text/html" },
+    });
+  });
+
+  server.addRequestHandler(async req => {
+    if (![".sass", ".scss", ".css"].some(ext => req.url.endsWith(ext))) {
+      return;
+    }
+
+    const filePath = join(process.cwd(), req.url);
+
+    try {
+      const result = await transform(null, { src: filePath });
+
+      return new Response(result.source, {
+        headers: { "Content-Type": mime.getType("file.css") },
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  });
+
+  watch(process.cwd(), {
+    persistent: false,
+    recursive: true,
+    ignoreInitial: true,
+    ignored: file => file.includes("node_modules"),
+  }).on("all", async () => {
+    kill();
+    await router.scan(conf.in);
+    server.send("reload");
+  });
+
   await server.listen();
 };
 
