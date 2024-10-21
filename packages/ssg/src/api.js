@@ -40,7 +40,7 @@ export const serve = async () => {
       },
     });
 
-    return new Response(doc.toString(), {
+    return new Response(doc, {
       headers: { "Content-Type": "text/html" },
     });
   });
@@ -51,16 +51,11 @@ export const serve = async () => {
     }
 
     const filePath = join(process.cwd(), req.url);
+    const result = await transform(null, { src: filePath });
 
-    try {
-      const result = await transform(null, { src: filePath });
-
-      return new Response(result.source, {
-        headers: { "Content-Type": mime.getType("file.css") },
-      });
-    } catch (e) {
-      console.error(e);
-    }
+    return new Response(result.source, {
+      headers: { "Content-Type": mime.getType("file.css") },
+    });
   });
 
   watch(process.cwd(), {
@@ -113,7 +108,7 @@ export const build = async () => {
       })
     );
 
-    return pipeline.process(src, dest, doc.toString());
+    return pipeline.process(src, dest, doc);
   };
 
   processed.push(

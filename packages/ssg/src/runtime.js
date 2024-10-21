@@ -3,8 +3,6 @@ import { createHash } from "node:crypto";
 import { register } from "node:module";
 import { fileURLToPath } from "node:url";
 
-import { parse } from "node-html-parser";
-
 import { createHtmlLiteral } from "./runtime/html.js";
 import { createStyleApi } from "./runtime/style.js";
 import { createComponent } from "./runtime/component.js";
@@ -35,7 +33,7 @@ export const exec = async (path, context) => {
   return new Promise((resolve, reject) => {
     childProcess.on("message", ({ content, styles }) => {
       resolve({
-        doc: parse(content),
+        doc: content,
         styles,
       });
     });
