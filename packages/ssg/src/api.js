@@ -1,7 +1,7 @@
 import { join, extname, resolve } from "node:path";
 import { cp } from "node:fs/promises";
 
-import { exec, kill } from "@xylit/ssg";
+import { exec, kill } from "./runtime.js";
 import { watch } from "chokidar";
 import mime from "mime";
 

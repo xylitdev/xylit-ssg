@@ -5,14 +5,11 @@ import { fileURLToPath } from "node:url";
 
 import { parse } from "node-html-parser";
 
-import { createHtmlLiteral } from "./html.js";
-import { createStyleApi } from "./style.js";
-import { createComponent } from "./component.js";
+import { createHtmlLiteral } from "./runtime/html.js";
+import { createStyleApi } from "./runtime/style.js";
+import { createComponent } from "./runtime/component.js";
 
-if (!import.meta.registered) {
-  register("./loaders/ssg-loader.js", import.meta.url);
-  import.meta.registered = true;
-}
+register("./runtime/loaders/ssg-loader.js", import.meta.url);
 
 let childProcess;
 

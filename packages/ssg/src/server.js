@@ -7,7 +7,7 @@ import { HTMLRewriter } from "htmlrewriter";
 import mime from "mime";
 import WebSocket, { WebSocketServer } from "ws";
 
-import { exec } from "./runtime/runtime.js";
+import { exec } from "./runtime.js";
 import { fileExists } from "./utils/fs.js";
 
 const liveScriptTemplate = readFileSync(

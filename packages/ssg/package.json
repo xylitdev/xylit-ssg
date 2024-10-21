@@ -28,7 +28,7 @@
     "ssg": "bin/cli.js"
   },
   "exports": {
-    ".": "./src/runtime/runtime.js",
+    ".": "./src/runtime.js",
     "./api": "./src/api.js"
   }
 }
