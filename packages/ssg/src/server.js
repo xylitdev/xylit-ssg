@@ -1,6 +1,7 @@
 import { createReadStream, readFileSync } from "node:fs";
 import { Server } from "node:http";
 import { join, resolve } from "node:path";
+import { Readable } from "node:stream";
 
 import { HTMLRewriter } from "htmlrewriter";
 import mime from "mime";
@@ -108,12 +109,7 @@ export class LiveServer {
     }
 
     res.writeHead(response.status, response.statusText, response.headers);
-
-    for await (const chunk of response.body) {
-      res.write(chunk);
-    }
-
-    res.end();
+    Readable.fromWeb(response.body).pipe(res);
   };
 
   onUpgrade = async (req, sock, head) => {
