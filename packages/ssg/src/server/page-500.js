@@ -1,4 +1,4 @@
-export default html`
+export default () => /*html*/ `
   <!DOCTYPE html>
   <html lang="en">
     <head>
@@ -8,7 +8,7 @@ export default html`
     </head>
 
     <body>
-      <h1>Not Found</h1>
+      <h1>500 - Internal Server Error</h1>
     </body>
   </html>
 `;
