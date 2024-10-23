@@ -7,7 +7,8 @@ import { HTMLRewriter } from "htmlrewriter";
 import mime from "mime";
 import WebSocket, { WebSocketServer } from "ws";
 
-import { exec } from "./runtime.js";
+import Page404 from "./server/page-404.js";
+import Page500 from "./server/page-500.js";
 import { fileExists } from "./utils/fs.js";
 
 const liveScriptTemplate = readFileSync(
@@ -23,11 +24,7 @@ const createLiveScript = config => {
 };
 
 const create500Response = async () => {
-  const { doc } = await exec(
-    resolve(import.meta.dirname, "./server/server-500.ssg.js")
-  );
-
-  return new Response(doc.toString(), {
+  return new Response(Page500(), {
     status: 500,
     statusText: "Internal Server Error",
     headers: { "Content-Type": "text/html" },
@@ -35,11 +32,7 @@ const create500Response = async () => {
 };
 
 const create404Response = async () => {
-  const { doc } = await exec(
-    resolve(import.meta.dirname, "./server/server-404.ssg.js")
-  );
-
-  return new Response(doc.toString(), {
+  return new Response(Page404(), {
     status: 404,
     statusText: "Not Found",
     headers: { "Content-Type": "text/html" },
@@ -66,12 +59,12 @@ export class LiveServer {
 
     Object.assign(this, config);
 
-    this.server.on("upgrade", this.onUpgrade);
-    this.server.on("request", this.onRequest);
+    this.server.on("upgrade", this.#onUpgrade);
+    this.server.on("request", this.#onRequest);
     this.liveScript = createLiveScript({ pathname: this.pathname });
   }
 
-  async runRequestHandlers(req, res) {
+  async #runRequestHandlers(req, res) {
     for (const handler of this.requestHandlers) {
       const response = await handler(req, res);
 
@@ -79,7 +72,7 @@ export class LiveServer {
     }
   }
 
-  onRequest = async (req, res) => {
+  #onRequest = async (req, res) => {
     const filename = join(this.root, req.url);
     const rewriter = new HTMLRewriter();
 
@@ -93,7 +86,7 @@ export class LiveServer {
 
     try {
       response =
-        (await this.runRequestHandlers(req, { rewriter })) ||
+        (await this.#runRequestHandlers(req, { rewriter })) ||
         (await createFileResponse(filename)) ||
         (await create404Response());
     } catch (err) {
@@ -112,7 +105,7 @@ export class LiveServer {
     Readable.fromWeb(response.body).pipe(res);
   };
 
-  onUpgrade = async (req, sock, head) => {
+  #onUpgrade = async (req, sock, head) => {
     const url = new URL(req.url, "wss://base.url");
 
     if (url.pathname === this.pathname) {
