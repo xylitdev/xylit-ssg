@@ -7,9 +7,10 @@ import { HTMLRewriter } from "htmlrewriter";
 import mime from "mime";
 import WebSocket, { WebSocketServer } from "ws";
 
+import { fileExists } from "@xylit/ssg/lib/fs";
+
 import Page404 from "./server/page-404.js";
 import Page500 from "./server/page-500.js";
-import { fileExists } from "./utils/fs.js";
 
 import { HtmlResponse } from "./server/response.js";
 

@@ -1,15 +1,15 @@
+import render from "dom-serializer";
+import { Parser, DomHandler } from "htmlparser2";
+
 import {
   isArray,
   isBoolean,
   isFunction,
   isNullish,
   isObject,
-} from "../utils/common.js";
+} from "@xylit/ssg/lib/common";
 
-import { classes } from "../utils/shame.js";
-
-import render from "dom-serializer";
-import { Parser, DomHandler } from "htmlparser2";
+import { classes } from "@xylit/ssg/lib/shame";
 
 const ATTRIBUTE = 0;
 const ATTRIBUTE_VALUE = 1;

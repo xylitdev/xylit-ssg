@@ -2,11 +2,12 @@ import postcss from "postcss";
 import PostcssModulesPlugin from "postcss-modules";
 import { compileAsync, compileStringAsync } from "sass";
 
+import { isArray, defineGetters } from "@xylit/ssg/lib/common";
+import { lazy } from "@xylit/ssg/lib/lazy";
+
 // TODO: runtime shouldn't have generator dependencies
 import config from "../generator/config.js";
 import PostcssScopedPlugin from "./postcss/scoped-plugin.js";
-import { isArray, defineGetters } from "../utils/common.js";
-import { lazy } from "../utils/lazy.js";
 
 const transformSass = async input => {
   const langReg = /(sass|scss)$/;

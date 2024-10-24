@@ -28,6 +28,7 @@
   },
   "exports": {
     ".": "./src/runtime.js",
-    "./api": "./src/api.js"
+    "./api": "./src/api.js",
+    "./lib/*": "./src/lib/*.js"
   }
 }
