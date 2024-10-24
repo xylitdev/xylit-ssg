@@ -1,15 +1,17 @@
-import { mkdir, writeFile } from "node:fs/promises";
-import { dirname } from "node:path";
+import mime from "mime";
 
-export const write = async (path, content) => {
-  const dir = dirname(path);
+import { transform } from "../runtime/style.js";
 
-  await mkdir(dir, { recursive: true });
-  await writeFile(path, content, { encoding: "utf-8" });
-};
+export class Pipeline {
+  async process({ src }) {
+    if (![".sass", ".scss", ".css"].some(ext => src.endsWith(ext))) {
+      return;
+    }
 
-export default class Pipeline {
-  async process(src, dest, source) {
-    await write(dest, source);
+    const result = await transform(null, { src });
+
+    return new Response(result.source, {
+      headers: { "Content-Type": mime.getType("file.css") },
+    });
   }
 }

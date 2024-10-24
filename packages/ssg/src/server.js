@@ -11,42 +11,27 @@ import Page404 from "./server/page-404.js";
 import Page500 from "./server/page-500.js";
 import { fileExists } from "./utils/fs.js";
 
-const liveScriptTemplate = readFileSync(
-  resolve(import.meta.dirname, "./server/live.client.js"),
-  { encoding: "utf-8" }
-);
+import { HtmlResponse } from "./server/response.js";
 
-const createLiveScript = config => {
-  return liveScriptTemplate.replace(
-    `/*INJECT_LIVE_CONFIG*/`,
-    JSON.stringify(config)
+const LiveScript = (() => {
+  const template = readFileSync(
+    resolve(import.meta.dirname, "./server/live.client.js"),
+    { encoding: "utf-8" }
   );
-};
 
-const create500Response = async () => {
-  return new Response(Page500(), {
-    status: 500,
-    statusText: "Internal Server Error",
-    headers: { "Content-Type": "text/html" },
-  });
-};
-
-const create404Response = async () => {
-  return new Response(Page404(), {
-    status: 404,
-    statusText: "Not Found",
-    headers: { "Content-Type": "text/html" },
-  });
-};
+  return config => {
+    return template.replace(`/*INJECT_LIVE_CONFIG*/`, JSON.stringify(config));
+  };
+})();
 
 const createFileResponse = async filename => {
-  if (!(await fileExists(filename))) return;
+  if (await fileExists(filename)) {
+    const stream = createReadStream(filename);
 
-  const stream = createReadStream(filename);
-
-  return new Response(stream, {
-    headers: { "Content-Type": mime.getType(filename) },
-  });
+    return new Response(stream, {
+      headers: { "Content-Type": mime.getType(filename) },
+    });
+  }
 };
 
 export class LiveServer {
@@ -61,7 +46,7 @@ export class LiveServer {
 
     this.server.on("upgrade", this.#onUpgrade);
     this.server.on("request", this.#onRequest);
-    this.liveScript = createLiveScript({ pathname: this.pathname });
+    this.liveScript = LiveScript({ pathname: this.pathname });
   }
 
   async #runRequestHandlers(req, res) {
@@ -88,13 +73,15 @@ export class LiveServer {
       response =
         (await this.#runRequestHandlers(req, { rewriter })) ||
         (await createFileResponse(filename)) ||
-        (await create404Response());
+        new HtmlResponse(Page404(), { status: 404 });
     } catch (err) {
+      console.log("hier");
+
       console.error(err);
 
       response =
         (await this.onRequestError?.(req, err, { rewriter })) ||
-        (await create500Response(err));
+        new HtmlResponse(Page500(), { status: 500 });
     }
 
     if (response.headers.get("Content-Type") === "text/html") {
