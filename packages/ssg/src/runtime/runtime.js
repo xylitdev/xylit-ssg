@@ -3,11 +3,13 @@ import { createHash } from "node:crypto";
 import { register } from "node:module";
 import { fileURLToPath } from "node:url";
 
-import { createHtmlLiteral } from "./runtime/html.js";
-import { createStyleApi } from "./runtime/style.js";
-import { createComponent } from "./runtime/component.js";
+import { parseDocument } from "htmlparser2";
 
-register("./runtime/loaders/ssg-loader.js", import.meta.url);
+import { createHtmlLiteral } from "./html.js";
+import { createStyleApi } from "./style.js";
+import { createComponent } from "./component.js";
+
+register("./loaders/ssg-loader.js", import.meta.url);
 
 let childProcess;
 
@@ -33,7 +35,7 @@ export const exec = async (path, context) => {
   return new Promise((resolve, reject) => {
     childProcess.on("message", ({ content, styles }) => {
       resolve({
-        doc: content,
+        document: parseDocument(content),
         styles,
       });
     });

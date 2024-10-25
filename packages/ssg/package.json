@@ -25,12 +25,12 @@
     "ssg": "bin/cli.js"
   },
   "exports": {
-    ".": "./src/runtime.js",
+    ".": "./src/runtime/runtime.js",
     "./api": "./src/api.js"
   },
   "imports": {
     "#lib/*": "./lib/*.js",
-    "#lib/live-server": "./lib/live-server/live-server.js",
-    "#lib/utils/*": "./lib/utils/*.js"
+    "#lib/utils/*": "./lib/utils/*.js",
+    "#runtime": "./src/runtime/runtime.js"
   }
 }

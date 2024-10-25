@@ -4,7 +4,7 @@ import { cp } from "node:fs/promises";
 import { load } from "cheerio";
 import { watch } from "chokidar";
 
-import { LiveServer } from "#lib/live-server";
+import { LiveServer } from "./server/server.js";
 
 import conf from "./generator/config.js";
 import { Bundler } from "./generator/bundler.js";
@@ -21,23 +21,18 @@ export const serve = async () => {
 
   await engine.scan(resolve(process.cwd(), "pages"));
 
-  server.use(async ({ req, sendHtml, sendStream }, next) => {
-    const page = await engine.generate(req.url);
+  server.use(async ({ req, sendHtml, sendStream }) => {
+    let resource = await engine.generate(req.url);
 
-    if (page) {
-      const $ = load(page.doc);
+    if (resource) {
+      const $ = load(resource.contents);
       const head = $("head");
-
-      page.styles.forEach(style => {
-        head.append(`<style>${style.source}</style>`);
-      });
-
       head.append(`<script>${server.liveScript}</script>`);
 
       return sendHtml($.html());
     }
 
-    let resource = await engine.getAsset(req.url);
+    resource = await engine.getAsset(req.url);
 
     if (resource && !resource.isStatic) {
       resource = await pipeline.process(resource);
