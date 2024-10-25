@@ -2,9 +2,9 @@ import postcss from "postcss";
 import PostcssModulesPlugin from "postcss-modules";
 import { compileAsync, compileStringAsync } from "sass";
 
-import { isArray, defineGetters } from "@xylit/ssg/lib/common";
-import { lazy } from "@xylit/ssg/lib/lazy";
-import PostcssScopedPlugin from "@xylit/ssg/lib/postcss-scoped-plugin";
+import { defineGetters, isArray } from "#lib/utils/common";
+import { lazy } from "#lib/utils/lazy";
+import PostcssScopedPlugin from "#lib/postcss-scoped-plugin";
 
 // TODO: runtime shouldn't have generator dependencies
 import config from "../generator/config.js";

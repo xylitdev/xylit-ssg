@@ -7,9 +7,9 @@ import {
   isFunction,
   isNullish,
   isObject,
-} from "@xylit/ssg/lib/common";
+} from "#lib/utils/common";
 
-import { classes } from "@xylit/ssg/lib/shame";
+import { classes } from "#lib/utils/shame";
 
 const ATTRIBUTE = 0;
 const ATTRIBUTE_VALUE = 1;

@@ -8,12 +8,10 @@
   "dependencies": {
     "acorn": "^8.12.1",
     "acorn-walk": "^8.3.4",
+    "cheerio": "^1.0.0",
     "chokidar": "^4.0.1",
     "commander": "^12.1.0",
     "dependency-graph": "^1.0.0",
-    "dom-serializer": "^2.0.0",
-    "htmlparser2": "^9.1.0",
-    "htmlrewriter": "^0.0.12",
     "install": "^0.13.0",
     "magic-string": "^0.30.11",
     "mime": "^4.0.4",
@@ -28,7 +26,11 @@
   },
   "exports": {
     ".": "./src/runtime.js",
-    "./api": "./src/api.js",
-    "./lib/*": "./lib/*.js"
+    "./api": "./src/api.js"
+  },
+  "imports": {
+    "#lib/*": "./lib/*.js",
+    "#lib/live-server": "./lib/live-server/_live-server.js",
+    "#lib/utils/*": "./lib/utils/*.js"
   }
 }

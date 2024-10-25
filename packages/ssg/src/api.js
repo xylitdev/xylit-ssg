@@ -1,14 +1,15 @@
 import { resolve } from "node:path";
 import { cp } from "node:fs/promises";
 
+import { load } from "cheerio";
 import { watch } from "chokidar";
 
+import { LiveServer } from "#lib/live-server";
+
 import conf from "./generator/config.js";
-import { Bundler, StyleInjector } from "./generator/bundler.js";
+import { Bundler } from "./generator/bundler.js";
 import { Engine } from "./generator/engine.js";
 import { Pipeline } from "./generator/pipeline.js";
-import { LiveServer } from "./server.js";
-import { HtmlResponse } from "./server/response.js";
 
 export const serve = async () => {
   const pipeline = new Pipeline();
@@ -20,20 +21,30 @@ export const serve = async () => {
 
   await engine.scan(resolve(process.cwd(), "pages"));
 
-  server.addRequestHandler(async (req, { rewriter }) => {
+  server.use(async ({ req, sendHtml, sendStream }, next) => {
     const page = await engine.generate(req.url);
 
     if (page) {
-      rewriter.on("head", new StyleInjector(page.styles));
-      return new HtmlResponse(page.doc);
+      const $ = load(page.doc);
+      const head = $("head");
+
+      page.styles.forEach(style => {
+        head.append(`<style>${style.source}</style>`);
+      });
+
+      head.append(`<script>${server.liveScript}</script>`);
+
+      return sendHtml($.html());
     }
-  });
 
-  server.addRequestHandler(async req => {
-    const asset = await engine.getAsset(req.url);
+    let resource = await engine.getAsset(req.url);
 
-    if (asset && !asset.isStatic) {
-      return pipeline.process(asset);
+    if (resource && !resource.isStatic) {
+      resource = await pipeline.process(resource);
+
+      return sendStream(resource.contents, {
+        headers: { "Content-Type": resource.mediaType },
+      });
     }
   });
 

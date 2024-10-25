@@ -1,3 +1,5 @@
+import { Readable } from "node:stream";
+
 import mime from "mime";
 
 import { transform } from "../runtime/style.js";
@@ -10,8 +12,9 @@ export class Pipeline {
 
     const result = await transform(null, { src });
 
-    return new Response(result.source, {
-      headers: { "Content-Type": mime.getType("file.css") },
-    });
+    return {
+      contents: Readable.from(result.source),
+      mediaType: mime.getType("file.css"),
+    };
   }
 }

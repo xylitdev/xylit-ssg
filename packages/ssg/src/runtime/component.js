@@ -1,6 +1,6 @@
 import EventEmitter from "node:events";
 
-import { isObject, isFunction } from "@xylit/ssg/lib/common";
+import { isObject, isFunction } from "#lib/utils/common";
 
 const contexts = [];
 const emitter = new EventEmitter();

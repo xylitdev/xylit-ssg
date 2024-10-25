@@ -1,7 +1,7 @@
 import { readdir } from "node:fs/promises";
 import { basename, relative, resolve, sep } from "node:path";
 
-import { set, unset } from "@xylit/ssg/lib/common";
+import { set, unset } from "#lib/utils/common";
 
 export default class Router {
   #conf;
@@ -46,6 +46,7 @@ export default class Router {
 
   async scan(root = this.#conf.root) {
     this.#conf.root = root;
+    this.#entries = {};
 
     const dirs = [root];
 
