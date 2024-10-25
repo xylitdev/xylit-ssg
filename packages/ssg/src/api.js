@@ -6,10 +6,10 @@ import { watch } from "chokidar";
 
 import { LiveServer } from "./server/server.js";
 
-import conf from "./generator/config.js";
-import { Bundler } from "./generator/bundler.js";
-import { Engine } from "./generator/engine.js";
-import { Pipeline } from "./generator/pipeline.js";
+import conf from "./engine/config.js";
+import { Bundler } from "./engine/bundler.js";
+import { Engine } from "./engine/engine.js";
+import { Pipeline } from "./engine/pipeline.js";
 
 export const serve = async () => {
   const pipeline = new Pipeline();

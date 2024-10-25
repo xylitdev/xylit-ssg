@@ -1,6 +1,6 @@
 import EventEmitter from "node:events";
 
-import { isObject, isFunction } from "#lib/utils/common";
+import { isObject, isFunction } from "#utils/common";
 
 const contexts = [];
 const emitter = new EventEmitter();

@@ -29,8 +29,7 @@
     "./api": "./src/api.js"
   },
   "imports": {
-    "#lib/*": "./lib/*.js",
-    "#lib/utils/*": "./lib/utils/*.js",
-    "#runtime": "./src/runtime/runtime.js"
+    "#*": "./lib/*.js",
+    "#utils/*": "./lib/utils/*.js"
   }
 }

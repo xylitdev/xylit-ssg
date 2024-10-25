@@ -7,9 +7,9 @@ import {
   isFunction,
   isNullish,
   isObject,
-} from "#lib/utils/common";
+} from "#utils/common";
 
-import { classes } from "#lib/utils/shame";
+import { classes } from "#utils/shame";
 
 const ATTRIBUTE = 0;
 const ATTRIBUTE_VALUE = 1;

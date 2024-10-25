@@ -2,12 +2,12 @@ import postcss from "postcss";
 import PostcssModulesPlugin from "postcss-modules";
 import { compileAsync, compileStringAsync } from "sass";
 
-import { defineGetters, isArray } from "#lib/utils/common";
-import { lazy } from "#lib/utils/lazy";
-import PostcssScopedPlugin from "#lib/postcss-scoped-plugin";
+import { defineGetters, isArray } from "#utils/common";
+import { lazy } from "#utils/lazy";
+import PostcssScopedPlugin from "#postcss-scoped-plugin";
 
-// TODO: runtime shouldn't have generator dependencies
-import config from "../generator/config.js";
+// TODO: runtime shouldn't have engine dependencies
+import config from "../engine/config.js";
 
 const transformSass = async input => {
   const langReg = /(sass|scss)$/;

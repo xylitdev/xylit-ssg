@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import { load } from "cheerio";
 
-import { exec, kill } from "#runtime";
+import { exec, kill } from "../runtime/runtime.js";
 
 import Router from "./router.js";
 
