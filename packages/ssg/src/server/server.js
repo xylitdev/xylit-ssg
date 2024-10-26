@@ -50,6 +50,8 @@ export class LiveServer {
           response = await ctx.sendResponse(response);
         }
       } catch (error) {
+        console.error(error);
+
         const html = Page500({ error, liveScript: this.liveScript });
         return ctx.sendHtml(html, { status: 500 });
       }

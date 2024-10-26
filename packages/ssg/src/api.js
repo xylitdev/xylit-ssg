@@ -9,10 +9,8 @@ import { LiveServer } from "./server/server.js";
 import conf from "./engine/config.js";
 import { Bundler } from "./engine/bundler.js";
 import { Engine } from "./engine/engine.js";
-import { Pipeline } from "./engine/pipeline.js";
 
 export const serve = async () => {
-  const pipeline = new Pipeline();
   const engine = new Engine(conf);
   const server = new LiveServer({
     root: resolve(process.cwd(), "public"),
@@ -35,11 +33,9 @@ export const serve = async () => {
     resource = await engine.getAsset(req.url);
 
     if (resource && !resource.isStatic) {
-      resource = await pipeline.process(resource);
+      resource = await engine.transform(resource);
 
-      return sendStream(resource.contents, {
-        headers: { "Content-Type": resource.mediaType },
-      });
+      return resource.toResponse();
     }
   });
 

@@ -73,7 +73,7 @@ const transformModule = async input => {
   return { ...input, exports, source: postCssResult.css };
 };
 
-export const transform = async (source, options) =>
+const transform = async (source, options) =>
   [transformSass, transformScoped, transformModule].reduce(
     (prev, step) => prev.then(step),
     Promise.resolve({
