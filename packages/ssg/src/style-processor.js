@@ -34,6 +34,7 @@ export class StyleProcessor {
     }
 
     return new Resource({
+      ...resource,
       mediaType: "text/css",
       dependencies: result.loadedUrls,
       sourceMap: result.sourceMap,
@@ -53,7 +54,7 @@ export class StyleProcessor {
     const meta = {};
     const plugins = [...this.plugins];
 
-    if (mode.startsWith("module")) {
+    if (mode?.startsWith?.("module")) {
       plugins.push(
         PostcssModulesPlugin({
           scopeBehaviour: mode.endsWith("global") ? "global" : "local",
@@ -64,21 +65,22 @@ export class StyleProcessor {
     } else if (mode === "scoped") {
       const url = Object.assign(new URL(resource.url), { search: "" });
       const scope = createHash("shake256", { outputLength: 5 })
-        .update(url)
+        .update(url.toString())
         .digest("hex");
 
-      plugins.push(PostcssScopedPlugin(scope));
+      plugins.push(PostcssScopedPlugin(`data-${scope}`));
       meta.scope = scope;
     }
 
     const processor = postcss(plugins);
     const css = await resource.text();
     const result = await processor.process(css, {
-      from: resource.url,
-      to: resource.url,
+      from: resource.url.toString(),
+      to: resource.url.toString(),
     });
 
     return new Resource({
+      ...resource,
       meta,
       mediaType: "text/css",
       dependencies: result.loadedUrls,
@@ -89,7 +91,7 @@ export class StyleProcessor {
 
   async process(resource, options) {
     resource = await this.preprocess(resource);
-    resource = await this.postprocess(resource, { mode: "", ...options });
+    resource = await this.postprocess(resource, { ...options });
 
     return resource;
   }

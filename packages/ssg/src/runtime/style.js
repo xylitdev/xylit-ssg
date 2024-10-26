@@ -21,10 +21,7 @@ const transform = async (contents, { meta, lang, type }) => {
       }[lang] ?? "text/css",
   });
 
-  return processor.process(resource, {
-    cssModules: type === "module",
-    scope: type ? "global" : "local",
-  });
+  return processor.process(resource, { mode: type });
 };
 
 const createLiteral =
