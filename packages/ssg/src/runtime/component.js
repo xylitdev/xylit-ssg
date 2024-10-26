@@ -66,18 +66,10 @@ export const createComponent = (meta, guard) => {
     contexts.pop();
     off("rendered", collectStyles);
 
-    const resources = await Promise.all([...styles]);
-
     return {
       type: "ComponentResult",
       content: result?.content || result,
-      styles: await Promise.all(
-        resources.map(async resource => {
-          return {
-            source: await resource.text(),
-          };
-        })
-      ),
+      styles: await Promise.all([...styles]),
     };
   };
 

@@ -57,7 +57,7 @@ export class Engine {
 
       const head = load(document)("head");
       styles.forEach(style => {
-        head.append(`<style>${style.source}</style>`);
+        head.append(`<style>${style.contents}</style>`);
       });
 
       return new Resource({ contents: document, path, url });
