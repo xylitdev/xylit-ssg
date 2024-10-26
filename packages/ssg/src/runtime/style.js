@@ -1,97 +1,38 @@
-import postcss from "postcss";
-import PostcssModulesPlugin from "postcss-modules";
-import { compileAsync, compileStringAsync } from "sass";
-
-import { defineGetters, isArray } from "#utils/common";
+import { defineGetters } from "#utils/common";
 import { lazy } from "#utils/lazy";
-import PostcssScopedPlugin from "#postcss-scoped-plugin";
 
-// TODO: runtime shouldn't have engine dependencies
 import config from "../engine/config.js";
+import { Resource } from "../resource.js";
+import { StyleProcessor } from "../style-processor.js";
 
-const transformSass = async input => {
-  const langReg = /(sass|scss)$/;
+const processor = new StyleProcessor({
+  sass: config?.preprocessor?.sass,
+});
 
-  if (!langReg.test(input.src) && !langReg.test(input.lang)) {
-    return input;
-  }
-
-  const options = {
-    loadPaths: [process.cwd(), "node_modules"],
-  };
-
-  if (isArray(config?.preprocessor?.sass?.loadPaths)) {
-    options.loadPaths.push(...config.preprocessor.sass.loadPaths);
-  }
-
-  let sassResult;
-
-  if (input.source) {
-    sassResult = await compileStringAsync(input.source, options);
-  } else {
-    sassResult = await compileAsync(input.src, options);
-  }
-
-  return {
-    ...input,
-    lang: "css",
-    source: sassResult.css,
-    sourceMap: sassResult.sourceMap,
-    dependencies: sassResult.loadedUrls,
-  };
-};
-
-const transformScoped = async input => {
-  if (input.type !== "scoped") return input;
-
-  const processor = postcss([PostcssScopedPlugin(`data-${input.hash}`)]);
-
-  const postCssResult = await processor.process(input.source, {
-    from: input.src,
+const transform = async (contents, { meta, lang, type }) => {
+  const resource = new Resource({
+    contents,
+    url: meta.url,
+    mediaType:
+      {
+        less: "text/less",
+        sass: "text/x-sass",
+        scss: "text/x-scss",
+      }[lang] ?? "text/css",
   });
 
-  return { ...input, source: postCssResult.css };
-};
-
-const transformModule = async input => {
-  if (input.type !== "module") return input;
-
-  let exports;
-
-  const processor = postcss([
-    PostcssModulesPlugin({
-      scopeBehaviour: input.type.endsWith("global") ? "global" : "local",
-      localsConvention: "camelCaseOnly",
-      getJSON: (filename, json) => (exports = json),
-    }),
-  ]);
-
-  const postCssResult = await processor.process(input.source, {
-    from: input.src,
+  return processor.process(resource, {
+    cssModules: type === "module",
+    scope: type ? "global" : "local",
   });
-
-  return { ...input, exports, source: postCssResult.css };
 };
-
-const transform = async (source, options) =>
-  [transformSass, transformScoped, transformModule].reduce(
-    (prev, step) => prev.then(step),
-    Promise.resolve({
-      type: "",
-      lang: "css",
-      sourceMap: undefined,
-      dependencies: [],
-      source,
-      ...options,
-    })
-  );
 
 const createLiteral =
   ({ meta, lang, type }) =>
   (strings, ...values) => {
     // potential fix for: https://github.com/lit/lit-element/issues/637?
     const source = String.raw({ raw: strings.raw }, ...values);
-    const result = transform(source, { lang, type, hash: meta.urlHash });
+    const result = transform(source, { meta, lang, type });
 
     meta.styleDefinitions.push(result);
 

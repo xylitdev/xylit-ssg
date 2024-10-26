@@ -7,7 +7,7 @@ import mime from "mime";
 
 import { Resource } from "../resource.js";
 import { exec, kill } from "../runtime/runtime.js";
-import { createStyleTransform } from "../transforms.js";
+import { supportedMediaTypes, StyleProcessor } from "../style-processor.js";
 
 import config from "./config.js";
 import Router from "./router.js";
@@ -18,12 +18,12 @@ export class Engine {
   constructor() {
     this.router = new Router();
 
-    this.addTransform(
-      ["text/x-scss", "text/x-sass", "text/css"],
-      createStyleTransform({
-        sass: config?.preprocessor?.sass,
-        postcss: [],
-      })
+    const styleProcessor = new StyleProcessor({
+      sass: config?.preprocessor?.sass,
+    });
+
+    this.addTransform(supportedMediaTypes, resource =>
+      styleProcessor.process(resource)
     );
   }
 
