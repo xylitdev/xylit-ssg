@@ -6,7 +6,7 @@ import { load } from "cheerio";
 import mime from "mime";
 
 import { Resource } from "../resource.js";
-import { exec, kill } from "../runtime/runtime.js";
+import { execHot, kill } from "../runtime/runtime.js";
 import { supportedMediaTypes, StyleProcessor } from "../style-processor.js";
 
 import config from "./config.js";
@@ -50,7 +50,7 @@ export class Engine {
     if (route) {
       const path = route.destination;
       const url = pathToFileURL(path);
-      const { document, styles } = await exec(path, {
+      const { document, styles } = await execHot(path, {
         route,
         lang: process.env.LANG,
       });

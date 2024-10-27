@@ -39,10 +39,11 @@ const compile = async path => {
   return source.toString();
 };
 
-export async function load(url, context, next) {
-  if (!url.endsWith(".ssg.js")) return next(url, context);
+export async function load(urlStr, context, next) {
+  const url = new URL(urlStr);
+  if (!url.pathname.endsWith(".ssg.js")) return next(urlStr, context);
 
-  const path = fileURLToPath(url);
+  const path = fileURLToPath(urlStr);
 
   return {
     format: "module",

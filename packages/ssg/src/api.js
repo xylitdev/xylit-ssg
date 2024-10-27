@@ -1,14 +1,18 @@
-import { resolve } from "node:path";
 import { cp } from "node:fs/promises";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 
 import { load } from "cheerio";
 import { watch } from "chokidar";
+
+import { debounce } from "#utils/common";
 
 import { LiveServer } from "./server/server.js";
 
 import conf from "./engine/config.js";
 import { Bundler } from "./engine/bundler.js";
 import { Engine } from "./engine/engine.js";
+import { invalidate } from "./runtime/runtime.js";
 
 export const serve = async () => {
   const engine = new Engine(conf);
@@ -40,14 +44,25 @@ export const serve = async () => {
   });
 
   watch(process.cwd(), {
-    persistent: false,
+    persistent: true,
     recursive: true,
     ignoreInitial: true,
     ignored: file => file.includes("node_modules"),
-  }).on("all", async () => {
-    await engine.scan();
-    server.send("reload");
-  });
+  }).on(
+    "all",
+    debounce(
+      async args => {
+        const urls = args.map(([_, path]) => pathToFileURL(path).toString());
+
+        await invalidate(...urls);
+        await engine.scan();
+        server.send("reload");
+        console.info("...reload triggered");
+      },
+      20,
+      { aggregate: true }
+    )
+  );
 
   await server.listen();
 };

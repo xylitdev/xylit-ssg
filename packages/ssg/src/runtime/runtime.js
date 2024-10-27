@@ -2,21 +2,37 @@ import { fork } from "node:child_process";
 import { createHash } from "node:crypto";
 import { register } from "node:module";
 import { fileURLToPath } from "node:url";
+import { MessageChannel } from "node:worker_threads";
 
 import { parseDocument } from "htmlparser2";
+
+import { createCaller } from "#remote-function";
+import { createURL } from "#utils/common";
 
 import { createHtmlLiteral } from "./html.js";
 import { createStyleApi } from "./style.js";
 import { createComponent } from "./component.js";
 
+let childProcess;
+const { port1, port2 } = new MessageChannel();
+const { call } = createCaller(port1);
+
+register("./loaders/dep-loader.js", {
+  parentURL: import.meta.url,
+  data: { port: port2, runtime: import.meta.url },
+  transferList: [port2],
+});
+
 register("./loaders/ssg-loader.js", import.meta.url);
 
-let childProcess;
+export async function invalidate(...urls) {
+  return call("invalidate", ...urls);
+}
 
 export const init = meta => {
   meta.styleDefinitions = [];
   meta.urlHash = createHash("shake256", { outputLength: 5 })
-    .update(meta.url)
+    .update(createURL(meta.url, { search: "" }).toString())
     .digest("hex");
 
   return {
@@ -43,6 +59,18 @@ export const exec = async (path, context) => {
     childProcess.on("exit", reject);
     childProcess.send({ path, context });
   });
+};
+
+export const execHot = async (path, context) => {
+  const { default: Component } = await import(path);
+
+  Object.assign(Component, context);
+  const { content, styles } = await Component();
+
+  return {
+    document: parseDocument(content),
+    styles,
+  };
 };
 
 export const kill = () => {

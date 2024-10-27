@@ -5,6 +5,7 @@ import PostcssModulesPlugin from "postcss-modules";
 import { compileAsync, compileStringAsync } from "sass";
 
 import PostcssScopedPlugin from "#postcss-scoped-plugin";
+import { createURL } from "#utils/common";
 
 import { isSass, Resource } from "./resource.js";
 
@@ -63,7 +64,7 @@ export class StyleProcessor {
         })
       );
     } else if (mode === "scoped") {
-      const url = Object.assign(new URL(resource.url), { search: "" });
+      const url = createURL(resource.url, { search: "" });
       const scope = createHash("shake256", { outputLength: 5 })
         .update(url.toString())
         .digest("hex");

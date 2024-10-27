@@ -97,3 +97,31 @@ export const defineGetters = (obj, props) => {
 
   return Object.defineProperties(obj, Object.fromEntries(entries));
 };
+
+export function createURL(url, modifier) {
+  url = Object.assign(new URL(url), modifier);
+
+  return url;
+}
+
+export function debounce(method, ms, opts) {
+  let timeoutId;
+  let aggregated = [];
+
+  return (...args) => {
+    clearTimeout(timeoutId);
+
+    if (opts?.aggregate) {
+      aggregated.push(args);
+    }
+
+    timeoutId = setTimeout(() => {
+      if (opts?.aggregate) {
+        method(aggregated);
+        aggregated = [];
+      } else {
+        method(...args);
+      }
+    }, ms);
+  };
+}
