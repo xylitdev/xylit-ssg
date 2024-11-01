@@ -9,9 +9,7 @@ import { StyleProcessor } from "./processing/style-processor.js";
 import { html } from "./templating/literals.js";
 import { createComponent } from "./templating/component.js";
 
-const processor = new StyleProcessor({
-  sass: config?.preprocessor?.sass,
-});
+const processor = new StyleProcessor(config.style);
 
 const transform = async (contents, { meta, lang, type }) => {
   const resource = new Resource({

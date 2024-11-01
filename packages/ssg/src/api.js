@@ -7,20 +7,17 @@ import { watch } from "chokidar";
 
 import { debounce } from "#lib/common";
 
-import conf from "./config.js";
+import config from "./config.js";
 import { LiveServer } from "./serving/server.js";
 import { Ssg, invalidate } from "./ssg.js";
 
 export const serve = async () => {
-  const ssg = new Ssg(conf);
-  const server = new LiveServer({
-    root: resolve(process.cwd(), "public"),
-    port: 8080,
-  });
+  const ssg = new Ssg();
+  const server = new LiveServer(config.server);
 
-  await ssg.scan(resolve(process.cwd(), "pages"));
+  await ssg.scan(config.input);
 
-  server.use(async ({ req, sendHtml, sendStream }) => {
+  server.use(async ({ req, sendHtml }) => {
     let resource = await ssg.generate(req.url);
 
     if (resource) {
@@ -40,7 +37,7 @@ export const serve = async () => {
     }
   });
 
-  watch(process.cwd(), {
+  watch(config.cwd, {
     persistent: true,
     recursive: true,
     ignoreInitial: true,
@@ -65,9 +62,7 @@ export const serve = async () => {
 };
 
 export const build = async () => {
-  await cp(conf?.static ?? "public", conf?.out ?? "dist", {
-    recursive: true,
-  }).catch(() => {
+  await cp(config.input, config.output, { recursive: true }).catch(() => {
     console.warn("static folder doesnt exist");
   });
 };

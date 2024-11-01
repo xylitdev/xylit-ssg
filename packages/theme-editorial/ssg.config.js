@@ -1,5 +1,5 @@
 export default {
-  preprocessor: {
+  style: {
     sass: {
       loadPaths: ["styles", "../../node_modules"],
     },

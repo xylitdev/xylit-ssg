@@ -37,9 +37,7 @@ export class Ssg {
   constructor() {
     this.router = new Router();
 
-    const styleProcessor = new StyleProcessor({
-      sass: config?.preprocessor?.sass,
-    });
+    const styleProcessor = new StyleProcessor(config.style);
 
     this.addTransform(supportedMediaTypes, resource =>
       styleProcessor.process(resource)
