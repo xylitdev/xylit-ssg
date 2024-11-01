@@ -7,24 +7,21 @@ import { watch } from "chokidar";
 
 import { debounce } from "#lib/common";
 
-import { LiveServer } from "./server/server.js";
-
-import conf from "./engine/config.js";
-import { Bundler } from "./engine/bundler.js";
-import { Engine } from "./engine/engine.js";
-import { invalidate } from "./runtime/runtime.js";
+import conf from "./config.js";
+import { LiveServer } from "./serving/server.js";
+import { Ssg, invalidate } from "./ssg.js";
 
 export const serve = async () => {
-  const engine = new Engine(conf);
+  const ssg = new Ssg(conf);
   const server = new LiveServer({
     root: resolve(process.cwd(), "public"),
     port: 8080,
   });
 
-  await engine.scan(resolve(process.cwd(), "pages"));
+  await ssg.scan(resolve(process.cwd(), "pages"));
 
   server.use(async ({ req, sendHtml, sendStream }) => {
-    let resource = await engine.generate(req.url);
+    let resource = await ssg.generate(req.url);
 
     if (resource) {
       const $ = load(resource.contents);
@@ -34,10 +31,10 @@ export const serve = async () => {
       return sendHtml($.html());
     }
 
-    resource = await engine.getAsset(req.url);
+    resource = await ssg.getAsset(req.url);
 
     if (resource && !resource.isStatic) {
-      resource = await engine.transform(resource);
+      resource = await ssg.transform(resource);
 
       return resource.toResponse();
     }
@@ -55,7 +52,7 @@ export const serve = async () => {
         const urls = args.map(([_, path]) => pathToFileURL(path).toString());
 
         await invalidate(...urls);
-        await engine.scan();
+        await ssg.scan();
         server.send("reload");
         console.info("...reload triggered");
       },
@@ -68,19 +65,6 @@ export const serve = async () => {
 };
 
 export const build = async () => {
-  const bundler = new Bundler();
-  const pipeline = new AssetPipeline();
-  const engine = new TemplateEngine();
-
-  await engine.scan();
-
-  for (const url of engine.sitemap()) {
-    const page = await engine.generate(url);
-    bundler.add(page);
-  }
-
-  await bundler.flush(asset => pipeline.process(asset));
-
   await cp(conf?.static ?? "public", conf?.out ?? "dist", {
     recursive: true,
   }).catch(() => {

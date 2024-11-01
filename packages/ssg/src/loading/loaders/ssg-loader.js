@@ -10,10 +10,9 @@ const fnTypes = ["ArrowFunctionExpression", "FunctionDeclaration"];
 const injectImports = (source, ast) => {
   source.prepend(
     [
-      'import { init as _ssgInit } from "@xylit/ssg";',
-      "const _SSG = _ssgInit(import.meta);",
-      "const { html, style } = _SSG",
-      "export const __setContext = _SSG.setContext;",
+      'import { initialize as __initializeSSG } from "@xylit/ssg/runtime";',
+      "export const __SSG = __initializeSSG(import.meta);",
+      "const { html, style } = __SSG",
       "",
     ].join("\n")
   );
@@ -23,10 +22,10 @@ const wrapDefaultExport = (source, ast) => {
   walk.simple(ast, {
     ExportDefaultDeclaration({ declaration: { type, start, end } }) {
       if (fnTypes.includes(type)) {
-        source.appendLeft(start, "_SSG.createComponent(");
+        source.appendLeft(start, "__SSG.createComponent(");
         source.appendRight(end, ");");
       } else {
-        source.appendLeft(start, "_SSG.createComponent(() => (");
+        source.appendLeft(start, "__SSG.createComponent(() => (");
         source.appendRight(end, "));");
       }
     },

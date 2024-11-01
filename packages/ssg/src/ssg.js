@@ -1,3 +1,8 @@
+import { register } from "node:module";
+import { MessageChannel } from "node:worker_threads";
+
+import { createCaller } from "#lib/remote-function";
+
 import { createReadStream } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -5,14 +10,28 @@ import { pathToFileURL } from "node:url";
 import { load } from "cheerio";
 import mime from "mime";
 
-import { Resource } from "../resource.js";
-import { execHot, kill } from "../runtime/runtime.js";
-import { supportedMediaTypes, StyleProcessor } from "../style-processor.js";
-
 import config from "./config.js";
-import Router from "./router.js";
+import { generate } from "./generating/document.js";
+import Router from "./loading/router.js";
+import { Resource } from "./processing/resource.js";
 
-export class Engine {
+import {
+  supportedMediaTypes,
+  StyleProcessor,
+} from "./processing/style-processor.js";
+
+const { port1, port2 } = new MessageChannel();
+const { call } = createCaller(port1);
+
+register("./loading/loaders/dep-loader.js", {
+  parentURL: import.meta.url,
+  data: { port: port2, runtime: import.meta.url },
+  transferList: [port2],
+});
+
+register("./loading/loaders/ssg-loader.js", import.meta.url);
+
+export class Ssg {
   transforms = [];
 
   constructor() {
@@ -40,28 +59,33 @@ export class Engine {
   }
 
   async scan(root) {
-    kill();
     await this.router.scan(root);
   }
 
   async generate(reqUrl) {
     const route = this.router.match(reqUrl);
 
-    if (route) {
-      const path = route.destination;
-      const url = pathToFileURL(path);
-      const { document, styles } = await execHot(path, {
-        route,
-        lang: process.env.LANG,
-      });
+    if (!route) return;
 
-      const head = load(document)("head");
-      styles.forEach(style => {
-        head.append(`<style>${style.contents}</style>`);
-      });
+    const path = route.destination;
+    const url = pathToFileURL(path);
 
-      return new Resource({ contents: document, path, url });
-    }
+    const { default: Component, __SSG } = await import(path);
+
+    __SSG.setContext({
+      route,
+      lang: process.env.LANG,
+    });
+
+    const result = await Component();
+    const { dom, styles } = await generate(result);
+
+    const head = load(dom)("head");
+    styles.forEach(style => {
+      head.append(`<style>${style.contents}</style>`);
+    });
+
+    return new Resource({ contents: dom, path, url });
   }
 
   async transform(resource) {
@@ -88,4 +112,8 @@ export class Engine {
       });
     }
   }
+}
+
+export async function invalidate(...urls) {
+  return call("invalidate", ...urls);
 }

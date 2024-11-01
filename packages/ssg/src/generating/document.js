@@ -15,7 +15,7 @@ class UnsupportedInterpolationError extends Error {
   }
 }
 
-export class ScopedHandler extends DomHandler {
+class ScopedHandler extends DomHandler {
   onopentag(name, attribs) {
     const attrs = this.scope
       ? { [`data-${this.scope}`]: "", ...attribs }
@@ -25,7 +25,7 @@ export class ScopedHandler extends DomHandler {
   }
 }
 
-export async function compose(result) {
+export async function generate(result) {
   const handler = new ScopedHandler();
   const parser = new Parser(handler);
   const styles = new Set();
@@ -65,5 +65,8 @@ export async function compose(result) {
 
   parser.end();
 
-  return { dom: handler.dom, styles: [...styles] };
+  return {
+    dom: handler.dom,
+    styles: await Promise.all([...styles]),
+  };
 }

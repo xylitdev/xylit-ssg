@@ -1,9 +1,13 @@
-import { defineGetters } from "#lib/common";
+import { createHash } from "node:crypto";
+
+import { createURL, defineGetters } from "#lib/common";
 import { lazy } from "#lib/lazy";
 
-import config from "../engine/config.js";
-import { Resource } from "../resource.js";
-import { StyleProcessor } from "../style-processor.js";
+import config from "./config.js";
+import { Resource } from "./processing/resource.js";
+import { StyleProcessor } from "./processing/style-processor.js";
+import { html } from "./templating/literals.js";
+import { createComponent } from "./templating/component.js";
 
 const processor = new StyleProcessor({
   sass: config?.preprocessor?.sass,
@@ -36,7 +40,7 @@ const createLiteral =
     return lazy(result.then(r => r.exports));
   };
 
-export const createStyleApi = meta => {
+const createStyleApi = meta => {
   const addGetters = obj =>
     defineGetters(obj, {
       module: conf => addGetters({ ...conf, type: "module" }),
@@ -47,3 +51,29 @@ export const createStyleApi = meta => {
 
   return addGetters(bundle => addGetters({ bundle }));
 };
+
+export function initialize(meta) {
+  let ctx;
+  meta.styleDefinitions = [];
+  meta.urlHash = createHash("shake256", { outputLength: 5 })
+    .update(createURL(meta.url, { search: "" }).toString())
+    .digest("hex");
+
+  return {
+    html,
+    style: createStyleApi(meta),
+
+    createComponent(template) {
+      return createComponent({
+        id: meta.urlHash,
+        styles: meta.styleDefinitions,
+        template,
+        context: () => ctx,
+      });
+    },
+
+    setContext(context) {
+      ctx = context;
+    },
+  };
+}
