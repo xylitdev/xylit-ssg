@@ -10,15 +10,10 @@ import { pathToFileURL } from "node:url";
 import { load } from "cheerio";
 import mime from "mime";
 
-import config from "./config.js";
 import { generate } from "./generating/document.js";
 import Router from "./loading/router.js";
 import { Resource } from "./processing/resource.js";
-
-import {
-  supportedMediaTypes,
-  StyleProcessor,
-} from "./processing/style-processor.js";
+import { supportedMediaTypes, processStyle } from "./processing/style.js";
 
 const { port1, port2 } = new MessageChannel();
 const { call } = createCaller(port1);
@@ -36,12 +31,7 @@ export class Ssg {
 
   constructor() {
     this.router = new Router();
-
-    const styleProcessor = new StyleProcessor(config.style);
-
-    this.addTransform(supportedMediaTypes, resource =>
-      styleProcessor.process(resource)
-    );
+    this.addTransform(supportedMediaTypes, processStyle);
   }
 
   addTransform(condition, transform) {

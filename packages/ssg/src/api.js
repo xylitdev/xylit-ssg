@@ -1,13 +1,12 @@
 import { cp } from "node:fs/promises";
-import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { load } from "cheerio";
 import { watch } from "chokidar";
 
+import config from "#config";
 import { debounce } from "#lib/common";
 
-import config from "./config.js";
 import { LiveServer } from "./serving/server.js";
 import { Ssg, invalidate } from "./ssg.js";
 

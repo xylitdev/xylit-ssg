@@ -3,13 +3,10 @@ import { createHash } from "node:crypto";
 import { createURL, defineGetters } from "#lib/common";
 import { lazy } from "#lib/lazy";
 
-import config from "./config.js";
 import { Resource } from "./processing/resource.js";
-import { StyleProcessor } from "./processing/style-processor.js";
+import { processStyle } from "./processing/style.js";
 import { html } from "./templating/literals.js";
 import { createComponent } from "./templating/component.js";
-
-const processor = new StyleProcessor(config.style);
 
 const transform = async (contents, { meta, lang, type }) => {
   const resource = new Resource({
@@ -23,7 +20,7 @@ const transform = async (contents, { meta, lang, type }) => {
       }[lang] ?? "text/css",
   });
 
-  return processor.process(resource, { mode: type });
+  return processStyle(resource, { mode: type });
 };
 
 const createLiteral =
