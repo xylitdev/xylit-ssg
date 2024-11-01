@@ -9,9 +9,10 @@ import { parseDocument } from "htmlparser2";
 import { createURL } from "#lib/common";
 import { createCaller } from "#lib/remote-function";
 
-import { createHtmlLiteral } from "./html.js";
+import { html } from "./literals.js";
 import { createStyleApi } from "./style.js";
 import { createComponent } from "./component.js";
+import { compose } from "./composing.js";
 
 let childProcess;
 const { port1, port2 } = new MessageChannel();
@@ -30,15 +31,28 @@ export async function invalidate(...urls) {
 }
 
 export const init = meta => {
+  let ctx;
   meta.styleDefinitions = [];
   meta.urlHash = createHash("shake256", { outputLength: 5 })
     .update(createURL(meta.url, { search: "" }).toString())
     .digest("hex");
 
   return {
-    html: createHtmlLiteral(meta),
+    html,
     style: createStyleApi(meta),
-    createComponent: createComponent.bind(undefined, meta),
+
+    createComponent(template) {
+      return createComponent({
+        id: meta.urlHash,
+        styles: meta.styleDefinitions,
+        template,
+        context: () => ctx,
+      });
+    },
+
+    setContext(context) {
+      ctx = context;
+    },
   };
 };
 
@@ -62,15 +76,13 @@ export const exec = async (path, context) => {
 };
 
 export const execHot = async (path, context) => {
-  const { default: Component } = await import(path);
+  const { default: Component, __setContext } = await import(path);
 
-  Object.assign(Component, context);
-  const { content, styles } = await Component();
+  __setContext(context);
+  const result = await Component();
+  const { dom, styles } = await compose(result);
 
-  return {
-    document: parseDocument(content),
-    styles,
-  };
+  return { document: dom, styles: await Promise.all(styles) };
 };
 
 export const kill = () => {

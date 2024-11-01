@@ -6,6 +6,10 @@ export const isFunction = any => typeof any === "function";
 
 export const isNullish = any => any == null;
 
+export function isThenable(obj) {
+  return typeof obj?.then === "function";
+}
+
 export const isObject = obj =>
   null !== obj &&
   typeof obj === "object" &&
@@ -55,6 +59,13 @@ export const pick = (obj, ...paths) => {
   return picked;
 };
 
+export function transform(obj, fn, initial = obj.constructor()) {
+  return Object.entries(obj).reduce(
+    (prev, [key, value]) => fn(prev, key, value, initial) ?? prev,
+    initial
+  );
+}
+
 export const unset = (root, segments) => {
   const name = segments.pop();
 
@@ -73,6 +84,14 @@ export const until = (transformation, items) => {
     if (result) return result;
   }
 };
+
+export function findMapLast(iterable, fn) {
+  const item = [...iterable].findLast(fn);
+
+  if (item != null) {
+    return fn(item);
+  }
+}
 
 export const monkeyPatch = (obj, methods) => {
   Object.entries(methods).forEach(([name, method]) => {

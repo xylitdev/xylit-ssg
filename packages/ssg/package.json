@@ -30,6 +30,7 @@
   },
   "imports": {
     "#lib/*": "./lib/*.js",
+    "#lib/htmlparser2/*": "./lib/htmlparser2/*.js",
     "#lib/postcss/*": "./lib/postcss/*.js"
   }
 }

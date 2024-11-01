@@ -1,9 +1,8 @@
-import EventEmitter from "node:events";
-
 import { isObject, isFunction } from "#lib/common";
 
+import { html } from "./literals.js";
+
 const contexts = [];
-const emitter = new EventEmitter();
 
 const childrenToSlots = children => {
   const slots =
@@ -22,14 +21,6 @@ const childrenToSlots = children => {
   return slot;
 };
 
-const on = (eventName, listener, options) => {
-  return options?.once
-    ? emitter.once(eventName, listener)
-    : emitter.on(eventName, listener);
-};
-
-const off = (eventName, listener) => emitter.off(eventName, listener);
-
 export const createContext = description => {
   const identifier = Symbol(description);
 
@@ -42,36 +33,16 @@ export const createContext = description => {
   return [provide, inject];
 };
 
-export const createComponent = (meta, guard) => {
-  const render = async (properties, ...children) => {
+export function createComponent({ id, styles, template, context }) {
+  return async function render(properties, ...children) {
     const props = { ...properties };
     const slot = childrenToSlots(children);
-    const ctx = { ...contexts.at(-1), ...render };
-    const styles = new Set();
+    const ctx = { ...contexts.at(-1), ...(context?.() || context) };
 
-    const collectStyles = ({ styleDefinitions }) => {
-      styleDefinitions.forEach(style => styles.add(style));
-    };
-
-    on("rendered", collectStyles);
     contexts.push(ctx);
-    emitter.emit("beforeRender", meta);
-
-    const template = guard();
-    const result = isFunction(template)
-      ? await template({ ...ctx, props, slot })
-      : await template;
-
-    emitter.emit("rendered", meta);
+    const result = await template({ ...ctx, props, slot });
     contexts.pop();
-    off("rendered", collectStyles);
 
-    return {
-      type: "ComponentResult",
-      content: result?.content || result,
-      styles: await Promise.all([...styles]),
-    };
+    return Object.assign(html`${result}`, { id, styles });
   };
-
-  return render;
-};
+}

@@ -5,12 +5,15 @@ import { parse } from "acorn";
 import * as walk from "acorn-walk";
 import MagicString from "magic-string";
 
+const fnTypes = ["ArrowFunctionExpression", "FunctionDeclaration"];
+
 const injectImports = (source, ast) => {
   source.prepend(
     [
       'import { init as _ssgInit } from "@xylit/ssg";',
       "const _SSG = _ssgInit(import.meta);",
       "const { html, style } = _SSG",
+      "export const __setContext = _SSG.setContext;",
       "",
     ].join("\n")
   );
@@ -18,9 +21,14 @@ const injectImports = (source, ast) => {
 
 const wrapDefaultExport = (source, ast) => {
   walk.simple(ast, {
-    ExportDefaultDeclaration({ declaration: { start, end } }) {
-      source.appendLeft(start, "_SSG.createComponent(() => (");
-      source.appendRight(end, "));");
+    ExportDefaultDeclaration({ declaration: { type, start, end } }) {
+      if (fnTypes.includes(type)) {
+        source.appendLeft(start, "_SSG.createComponent(");
+        source.appendRight(end, ");");
+      } else {
+        source.appendLeft(start, "_SSG.createComponent(() => (");
+        source.appendRight(end, "));");
+      }
     },
   });
 };
