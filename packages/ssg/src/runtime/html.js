@@ -7,9 +7,9 @@ import {
   isFunction,
   isNullish,
   isObject,
-} from "#utils/common";
+} from "#lib/common";
 
-import { classes } from "#utils/shame";
+import { stringifyClasses } from "#lib/stringify";
 
 const ATTRIBUTE = 0;
 const ATTRIBUTE_VALUE = 1;
@@ -129,7 +129,7 @@ const transform = async (value, type) => {
       break;
     case ATTRIBUTE_VALUE:
       if (isObject(value)) {
-        return classes(value);
+        return stringifyClasses(value);
       }
 
       break;

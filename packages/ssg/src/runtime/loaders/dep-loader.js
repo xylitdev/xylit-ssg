@@ -1,7 +1,7 @@
 import { DepGraph } from "dependency-graph";
 
-import { createReceiver } from "#remote-function";
-import { createURL } from "#utils/common";
+import { createURL } from "#lib/common";
+import { createReceiver } from "#lib/remote-function";
 
 const graph = new DepGraph({ circular: true });
 const versions = {};

@@ -6,8 +6,8 @@ import { MessageChannel } from "node:worker_threads";
 
 import { parseDocument } from "htmlparser2";
 
-import { createCaller } from "#remote-function";
-import { createURL } from "#utils/common";
+import { createURL } from "#lib/common";
+import { createCaller } from "#lib/remote-function";
 
 import { createHtmlLiteral } from "./html.js";
 import { createStyleApi } from "./style.js";

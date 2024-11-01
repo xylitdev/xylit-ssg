@@ -1,5 +1,5 @@
-import { defineGetters } from "#utils/common";
-import { lazy } from "#utils/lazy";
+import { defineGetters } from "#lib/common";
+import { lazy } from "#lib/lazy";
 
 import config from "../engine/config.js";
 import { Resource } from "../resource.js";

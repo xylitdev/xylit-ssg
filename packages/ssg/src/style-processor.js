@@ -4,8 +4,8 @@ import postcss from "postcss";
 import PostcssModulesPlugin from "postcss-modules";
 import { compileAsync, compileStringAsync } from "sass";
 
-import PostcssScopedPlugin from "#postcss-scoped-plugin";
-import { createURL } from "#utils/common";
+import { createURL } from "#lib/common";
+import PostcssScopedPlugin from "#lib/postcss/scoped-plugin";
 
 import { isSass, Resource } from "./resource.js";
 

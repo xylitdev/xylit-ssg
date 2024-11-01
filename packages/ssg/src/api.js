@@ -5,7 +5,7 @@ import { pathToFileURL } from "node:url";
 import { load } from "cheerio";
 import { watch } from "chokidar";
 
-import { debounce } from "#utils/common";
+import { debounce } from "#lib/common";
 
 import { LiveServer } from "./server/server.js";
 

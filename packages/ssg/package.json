@@ -29,7 +29,7 @@
     "./api": "./src/api.js"
   },
   "imports": {
-    "#*": "./lib/*.js",
-    "#utils/*": "./lib/utils/*.js"
+    "#lib/*": "./lib/*.js",
+    "#lib/postcss/*": "./lib/postcss/*.js"
   }
 }

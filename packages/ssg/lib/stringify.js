@@ -1,9 +1,9 @@
-export const classes = (...args) =>
+export const stringifyClasses = (...args) =>
   args
     .map(arg => {
       if (arg == null) return "";
 
-      if (Array.isArray(arg)) return classes(...arg);
+      if (Array.isArray(arg)) return stringifyClasses(...arg);
 
       if (typeof arg === "object") {
         return Object.entries(arg)
