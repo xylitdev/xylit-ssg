@@ -5,7 +5,7 @@ import { compileAsync, compileStringAsync } from "sass";
 import config from "#config";
 import PostcssScopedPlugin from "#lib/postcss/scoped-plugin";
 
-import { isSass, Resource } from "../generating/resource.js";
+import { isSass, Resource } from "../generation/resource.js";
 
 export const supportedMediaTypes = ["text/x-scss", "text/x-sass", "text/css"];
 

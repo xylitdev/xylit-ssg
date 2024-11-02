@@ -9,8 +9,8 @@ import mime from "mime";
 
 import { createCaller } from "#lib/remote-function";
 
-import { generate } from "./generating/document.js";
-import { Resource } from "./generating/resource.js";
+import { generate } from "./generation/document.js";
+import { Resource } from "./generation/resource.js";
 import Router from "./loading/router.js";
 import { supportedMediaTypes, processStyle } from "./processing/style.js";
 
