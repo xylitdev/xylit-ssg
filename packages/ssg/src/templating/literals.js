@@ -1,10 +1,35 @@
-import { TemplateResult } from "./template-result.js";
+import { IntermediateRepresentation } from "./intermediate-representation.js";
 
-function extendsTemplateResult(fn) {
-  Object.setPrototypeOf(fn.prototype, TemplateResult.prototype);
+function extendsIR(fn) {
+  Object.setPrototypeOf(fn.prototype, IntermediateRepresentation.prototype);
 }
 
-extendsTemplateResult(html);
+function constructIR(newTarget, ...args) {
+  return Reflect.construct(IntermediateRepresentation, args, newTarget);
+}
+
+extendsIR(html);
 export function html(strings, ...values) {
-  if (!new.target) return TemplateResult(strings, values, html);
+  return constructIR(html, strings, values);
+}
+
+extendsIR(css);
+export function css(strings, ...values) {
+  // potential fix for: https://github.com/lit/lit-element/issues/637?
+  return constructIR(css, strings.raw ?? strings, values);
+}
+
+extendsIR(less);
+export function less(strings, ...values) {
+  return constructIR(less, strings.raw ?? strings, values);
+}
+
+extendsIR(sass);
+export function sass(strings, ...values) {
+  return constructIR(sass, strings.raw ?? strings, values);
+}
+
+extendsIR(scss);
+export function scss(strings, ...values) {
+  return constructIR(scss, strings.raw ?? strings, values);
 }

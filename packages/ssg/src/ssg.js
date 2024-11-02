@@ -1,18 +1,17 @@
-import { register } from "node:module";
-import { MessageChannel } from "node:worker_threads";
-
-import { createCaller } from "#lib/remote-function";
-
 import { createReadStream } from "node:fs";
+import { register } from "node:module";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
+import { MessageChannel } from "node:worker_threads";
 
 import { load } from "cheerio";
 import mime from "mime";
 
+import { createCaller } from "#lib/remote-function";
+
 import { generate } from "./generating/document.js";
+import { Resource } from "./generating/resource.js";
 import Router from "./loading/router.js";
-import { Resource } from "./processing/resource.js";
 import { supportedMediaTypes, processStyle } from "./processing/style.js";
 
 const { port1, port2 } = new MessageChannel();

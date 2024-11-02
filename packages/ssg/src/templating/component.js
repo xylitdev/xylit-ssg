@@ -33,7 +33,7 @@ export const createContext = description => {
   return [provide, inject];
 };
 
-export function createComponent({ id, styles, template, context }) {
+export function createComponent({ scope, styles, template, context }) {
   return async function render(properties, ...children) {
     const props = { ...properties };
     const slot = childrenToSlots(children);
@@ -43,6 +43,6 @@ export function createComponent({ id, styles, template, context }) {
     const result = await template({ ...ctx, props, slot });
     contexts.pop();
 
-    return Object.assign(html`${result}`, { id, styles });
+    return Object.assign(html`${result}`, { scope, styles });
   };
 }

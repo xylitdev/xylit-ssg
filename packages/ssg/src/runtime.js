@@ -1,74 +1,63 @@
 import { createHash } from "node:crypto";
 
 import { createURL, defineGetters } from "#lib/common";
-import { lazy } from "#lib/lazy";
 
-import { Resource } from "./processing/resource.js";
-import { processStyle } from "./processing/style.js";
-import { html } from "./templating/literals.js";
 import { createComponent } from "./templating/component.js";
-
-const transform = async (contents, { meta, lang, type }) => {
-  const resource = new Resource({
-    contents,
-    url: meta.url,
-    mediaType:
-      {
-        less: "text/less",
-        sass: "text/x-sass",
-        scss: "text/x-scss",
-      }[lang] ?? "text/css",
-  });
-
-  return processStyle(resource, { mode: type });
-};
+import * as literals from "./templating/literals.js";
 
 const createLiteral =
-  ({ meta, lang, type }) =>
+  ({ ssgMeta, lang, type }) =>
   (strings, ...values) => {
-    // potential fix for: https://github.com/lit/lit-element/issues/637?
-    const source = String.raw({ raw: strings.raw }, ...values);
-    const result = transform(source, { meta, lang, type });
-
-    meta.styleDefinitions.push(result);
-
-    return lazy(result.then(r => r.exports));
-  };
-
-const createStyleApi = meta => {
-  const addGetters = obj =>
-    defineGetters(obj, {
-      module: conf => addGetters({ ...conf, type: "module" }),
-      scoped: conf => addGetters({ ...conf, type: "scoped" }),
-      css: conf => createLiteral({ ...conf, meta, lang: "css" }),
-      scss: conf => createLiteral({ ...conf, meta, lang: "scss" }),
+    const ir = Object.assign(literals[lang](strings, ...values), {
+      url: ssgMeta.url,
+      mode: type === "scoped" ? `scoped/${ssgMeta.scope}` : type,
     });
 
-  return addGetters(bundle => addGetters({ bundle }));
-};
+    ssgMeta.styles.push(ir);
+
+    return new Proxy(name => ir.exports?.[name], {
+      get(target, prop) {
+        return target(prop);
+      },
+    });
+  };
 
 export function initialize(meta) {
-  let ctx;
-  meta.styleDefinitions = [];
-  meta.urlHash = createHash("shake256", { outputLength: 5 })
+  const hash = createHash("shake256", { outputLength: 5 })
     .update(createURL(meta.url, { search: "" }).toString())
     .digest("hex");
 
+  const ssgMeta = {
+    ...meta,
+    styles: [],
+    scope: `data-${hash}`,
+  };
+
+  const createStyleApi = obj =>
+    defineGetters(obj, {
+      module: conf => createStyleApi({ ...conf, type: "module" }),
+      scoped: conf => createStyleApi({ ...conf, type: "scoped" }),
+      css: conf => createLiteral({ ...conf, ssgMeta, lang: "css" }),
+      scss: conf => createLiteral({ ...conf, ssgMeta, lang: "scss" }),
+    });
+
+  let componentContext;
+
   return {
-    html,
-    style: createStyleApi(meta),
+    html: literals.html,
+    style: createStyleApi(bundle => createStyleApi({ bundle })),
 
     createComponent(template) {
       return createComponent({
-        id: meta.urlHash,
-        styles: meta.styleDefinitions,
+        scope: ssgMeta.scope,
+        styles: ssgMeta.styles,
         template,
-        context: () => ctx,
+        context: () => componentContext,
       });
     },
 
     setContext(context) {
-      ctx = context;
+      componentContext = context;
     },
   };
 }

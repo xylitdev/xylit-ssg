@@ -1,14 +1,11 @@
-import { createHash } from "node:crypto";
-
 import postcss from "postcss";
 import PostcssModulesPlugin from "postcss-modules";
 import { compileAsync, compileStringAsync } from "sass";
 
 import config from "#config";
-import { createURL } from "#lib/common";
 import PostcssScopedPlugin from "#lib/postcss/scoped-plugin";
 
-import { isSass, Resource } from "./resource.js";
+import { isSass, Resource } from "../generating/resource.js";
 
 export const supportedMediaTypes = ["text/x-scss", "text/x-sass", "text/css"];
 
@@ -51,14 +48,9 @@ export async function postprocess(resource, { mode }) {
         getJSON: (filename, json) => (meta.exports = json),
       })
     );
-  } else if (mode === "scoped") {
-    const url = createURL(resource.url, { search: "" });
-    const scope = createHash("shake256", { outputLength: 5 })
-      .update(url.toString())
-      .digest("hex");
-
-    plugins.push(PostcssScopedPlugin(`data-${scope}`));
-    meta.scope = scope;
+  } else if (mode?.startsWith?.("scoped")) {
+    meta.scope = mode.split("/")[1] ?? "";
+    plugins.push(PostcssScopedPlugin(meta.scope));
   }
 
   const processor = postcss(plugins);

@@ -10,7 +10,7 @@ function* chunks(...hierarchy) {
     while (stack.length) {
       let chunk = stack.pop();
 
-      if (chunk instanceof TemplateResult) {
+      if (chunk instanceof IntermediateRepresentation) {
         yield* chunks(...hierarchy, chunk);
       } else if (isArray(chunk)) {
         stack.push(...chunk.reverse());
@@ -27,16 +27,25 @@ function* chunks(...hierarchy) {
   yield { chunk: strings.at(-1), hierarchy };
 }
 
-export function TemplateResult(strings, values, target = TemplateResult) {
-  const result = new.target ? this : Reflect.construct(target, arguments);
+export class IntermediateRepresentation {
+  constructor(strings, values) {
+    Object.assign(this, { strings, values });
+  }
 
-  return Object.assign(result, { strings, values });
-}
+  async join(separator = "") {
+    const chunks = [];
 
-Object.assign(TemplateResult.prototype, {
+    for await (const { chunk } of this) {
+      chunks.push(chunk);
+    }
+
+    return chunks.join(separator);
+  }
+
   [Symbol.iterator]() {
     return chunks(this);
-  },
+  }
+
   async *[Symbol.asyncIterator]() {
     const it = chunks(this);
 
@@ -52,5 +61,5 @@ Object.assign(TemplateResult.prototype, {
         yield value;
       }
     }
-  },
-});
+  }
+}
