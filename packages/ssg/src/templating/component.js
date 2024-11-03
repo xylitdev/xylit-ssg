@@ -1,4 +1,4 @@
-import { isObject, isFunction } from "#lib/common";
+import { isObject, isFunction } from "#lib/common/type";
 
 import { html } from "./literals.js";
 
@@ -43,7 +43,7 @@ export function createContext(description) {
   return [provide, inject];
 }
 
-export function createComponent({ scope, styles, template }) {
+export function createComponent({ scope, style, template }) {
   return async (properties, ...children) => {
     const [props, context] = extractPropsAndContext(properties);
     const slots = childrenToSlots(children);
@@ -52,6 +52,6 @@ export function createComponent({ scope, styles, template }) {
     const result = await template(props, slots, context);
     contexts.pop();
 
-    return Object.assign(html`${result}`, { scope, styles });
+    return Object.assign(html`${result}`, { scope, styles: [style].flat() });
   };
 }

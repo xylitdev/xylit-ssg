@@ -1,6 +1,6 @@
 import { DepGraph } from "dependency-graph";
 
-import { createURL } from "#lib/common";
+import { createURL } from "#lib/common/url";
 import { createReceiver } from "#lib/remote-function";
 
 const graph = new DepGraph({ circular: true });

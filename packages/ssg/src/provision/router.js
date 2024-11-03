@@ -1,9 +1,9 @@
 import { readdir } from "node:fs/promises";
 import { basename, relative, resolve, sep } from "node:path";
 
-import { set, unset } from "#lib/common";
+import { remove } from "#lib/common/object";
 
-export default class Router {
+export class Router {
   #conf;
   #entries;
 
@@ -17,27 +17,26 @@ export default class Router {
     };
   }
 
-  link(file) {
-    const { types } = this.#conf;
-    const relativePath = relative(this.#conf.root, file);
+  link(...paths) {
+    for (const path of paths) {
+      const ext = this.#conf.types.find(type => path.endsWith(type));
+      const relativePath = relative(this.#conf.root, path);
+      const segments = relativePath.split(sep);
+      const name = segments.pop();
+      const base = this.isIndex(name) ? "" : basename(name, ext);
+      const pattern = ["", ...segments, base].join("/");
 
-    if (
-      !relativePath ||
-      relativePath.startsWith("..") ||
-      !types.some(type => relativePath.endsWith(type))
-    ) {
-      return false;
+      this.#entries[pattern] = {
+        pattern,
+        destination: path,
+      };
     }
-
-    const segments = relativePath.split(sep);
-    set(this.#conf.root, segments, file);
-
-    return true;
   }
 
-  unlink(file) {
-    const segments = relative(this.#conf.root, file).split(sep);
-    unset(this.#conf.root, segments);
+  unlink(...paths) {
+    for (const path of paths) {
+      remove(this.#entries, (pattern, { destination }) => destination === path);
+    }
   }
 
   isIndex(name) {
@@ -62,17 +61,7 @@ export default class Router {
         if (dirent.isDirectory()) {
           dirs.push(path);
         } else if (this.#conf.types.some(ext => dirent.name.endsWith(ext))) {
-          const ext = this.#conf.types.find(type => path.endsWith(type));
-          const relativePath = relative(root, path);
-          const segments = relativePath.split(sep);
-          const name = segments.pop();
-          const base = this.isIndex(name) ? "" : basename(name, ext);
-          const pattern = ["", ...segments, base].join("/");
-
-          this.#entries[pattern] = {
-            pattern,
-            destination: path,
-          };
+          this.link(path);
         }
       }
     }

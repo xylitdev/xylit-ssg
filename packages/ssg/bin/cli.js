@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-import { serve, build } from "@xylit/ssg/api";
+import { serve } from "#api/serve.js";
+import { build } from "#api/build.js";
 import { program } from "commander";
 
 program

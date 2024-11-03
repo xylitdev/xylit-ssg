@@ -25,14 +25,13 @@
     "ssg": "bin/cli.js"
   },
   "exports": {
-    ".": "./src/ssg.js",
-    "./runtime": "./src/runtime.js",
-    "./api": "./src/api.js"
+    ".": "./exports/ssg.js",
+    "./api/*": "./src/api/*.js",
+    "./runtime": "./src/runtime.js"
   },
   "imports": {
-    "#config": "./src/config.js",
+    "#*": "./src/*",
     "#lib/*": "./lib/*.js",
-    "#lib/htmlparser2/*": "./lib/htmlparser2/*.js",
-    "#lib/postcss/*": "./lib/postcss/*.js"
+    "#lib/common/*": "./lib/common/*.js"
   }
 }

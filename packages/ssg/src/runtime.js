@@ -1,9 +1,10 @@
 import { createHash } from "node:crypto";
 
-import { createURL, defineGetters } from "#lib/common";
+import { defineGetters } from "#lib/common/language";
+import { createURL } from "#lib/common/url";
 
 import { createComponent } from "./templating/component.js";
-import * as literals from "./templating/literals.js";
+import * as literals from "./templating//literals.js";
 
 const createLiteral =
   ({ ssgMeta, lang, type }) =>
@@ -48,7 +49,7 @@ export function initialize(meta) {
     createComponent(template) {
       return createComponent({
         scope: ssgMeta.scope,
-        styles: ssgMeta.styles,
+        style: ssgMeta.styles,
         template,
       });
     },

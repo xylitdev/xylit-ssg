@@ -2,14 +2,12 @@ import postcss from "postcss";
 import PostcssModulesPlugin from "postcss-modules";
 import { compileAsync, compileStringAsync } from "sass";
 
-import config from "#config";
-import PostcssScopedPlugin from "#lib/postcss/scoped-plugin";
+import PostcssScopedPlugin from "#lib/postcss-scoped-plugin";
 
-import { isSass, Resource } from "../generation/resource.js";
+import config from "../config.js";
+import { Resource } from "../provision/resource.js";
 
-export const supportedMediaTypes = ["text/x-scss", "text/x-sass", "text/css"];
-
-export async function preprocessSass(resource) {
+async function preprocessSass(resource) {
   let result;
 
   if (!resource.path) {
@@ -28,15 +26,15 @@ export async function preprocessSass(resource) {
   });
 }
 
-export async function preprocess(resource) {
-  if (isSass(resource)) {
+async function preprocess(resource) {
+  if (resource.isSass) {
     return preprocessSass(resource);
   }
 
   return resource;
 }
 
-export async function postprocess(resource, { mode }) {
+async function postprocess(resource, { mode }) {
   const meta = {};
   const plugins = [...config.style.plugins];
 
@@ -70,7 +68,9 @@ export async function postprocess(resource, { mode }) {
   });
 }
 
-export async function processStyle(resource, options) {
+export const supportedMediaTypes = ["text/x-scss", "text/x-sass", "text/css"];
+
+export async function transformStyle(resource, options) {
   resource = await preprocess(resource);
   resource = await postprocess(resource, { ...options });
 

@@ -1,3 +1,5 @@
+import { isBoolean, isNullish } from "./common/type.js";
+
 export function stringifyClasses(...args) {
   return args
     .map(arg => {
