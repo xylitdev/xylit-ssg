@@ -10,9 +10,11 @@ import mime from "mime";
 import { createCaller } from "#lib/remote-function";
 
 import { generate } from "./generation/document.js";
+
 import { Resource } from "./generation/resource.js";
 import Router from "./loading/router.js";
 import { supportedMediaTypes, processStyle } from "./processing/style.js";
+import { __Context } from "./templating/component.js";
 
 const { port1, port2 } = new MessageChannel();
 const { call } = createCaller(port1);
@@ -57,14 +59,11 @@ export class Ssg {
     const path = route.destination;
     const url = pathToFileURL(path);
 
-    const { default: Component, __SSG } = await import(path);
-
-    __SSG.setContext({
-      route,
-      lang: process.env.LANG,
+    const { default: Component } = await import(path);
+    const result = await Component({
+      [__Context]: { route, lang: process.env.LANG },
     });
 
-    const result = await Component();
     const { dom, styles } = await generate(result);
 
     const head = load(dom)("head");

@@ -11,7 +11,7 @@ const injectImports = (source, ast) => {
   source.prepend(
     [
       'import { initialize as __initializeSSG } from "@xylit/ssg/runtime";',
-      "export const __SSG = __initializeSSG(import.meta);",
+      "const __SSG = __initializeSSG(import.meta);",
       "const { html, style } = __SSG",
       "",
     ].join("\n")

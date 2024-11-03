@@ -41,8 +41,6 @@ export function initialize(meta) {
       scss: conf => createLiteral({ ...conf, ssgMeta, lang: "scss" }),
     });
 
-  let componentContext;
-
   return {
     html: literals.html,
     style: createStyleApi(bundle => createStyleApi({ bundle })),
@@ -52,12 +50,7 @@ export function initialize(meta) {
         scope: ssgMeta.scope,
         styles: ssgMeta.styles,
         template,
-        context: () => componentContext,
       });
-    },
-
-    setContext(context) {
-      componentContext = context;
     },
   };
 }

@@ -21,6 +21,8 @@ const childrenToSlots = children => {
   return slot;
 };
 
+export const __Context = Symbol("Context");
+
 export const createContext = description => {
   const identifier = Symbol(description);
 
@@ -34,10 +36,10 @@ export const createContext = description => {
 };
 
 export function createComponent({ scope, styles, template, context }) {
-  return async function render(properties, ...children) {
+  return async function Component(properties, ...children) {
     const props = { ...properties };
     const slot = childrenToSlots(children);
-    const ctx = { ...contexts.at(-1), ...(context?.() || context) };
+    const ctx = { ...contexts.at(-1), ...props[__Context] };
 
     contexts.push(ctx);
     const result = await template({ ...ctx, props, slot });
