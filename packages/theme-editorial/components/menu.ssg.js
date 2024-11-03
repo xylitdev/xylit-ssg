@@ -1,4 +1,4 @@
-export default ({ props: { items }, route }) => html`
+export default ({ items }, slots, { route }) => html`
   <nav id="menu">
     <header class="major">
       <h2>Menu</h2>

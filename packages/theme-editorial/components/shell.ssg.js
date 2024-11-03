@@ -1,7 +1,7 @@
 import Header from "./header.ssg.js";
 import Sidebar from "./sidebar.ssg.js";
 
-export default ({ props: { title }, slot, lang }) => html`
+export default ({ title }, slot, { lang }) => html`
   <!DOCTYPE html>
   <!--
 	Editorial by HTML5 UP

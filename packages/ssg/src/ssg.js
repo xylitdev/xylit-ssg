@@ -60,11 +60,11 @@ export class Ssg {
     const url = pathToFileURL(path);
 
     const { default: Component } = await import(path);
-    const result = await Component({
+    const ir = await Component({
       [__Context]: { route, lang: process.env.LANG },
     });
 
-    const { dom, styles } = await generate(result);
+    const { dom, styles } = await generate(ir);
 
     const head = load(dom)("head");
     styles.forEach(style => {

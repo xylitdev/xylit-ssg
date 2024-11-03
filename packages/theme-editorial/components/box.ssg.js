@@ -1,5 +1,5 @@
-export default ({ props, slot }) => html`
-  <div class="box ${{ alt: props.alt }}">${slot}</div>
+export default ({ alt }, slot) => html`
+  <div class="box ${{ alt }}">${slot}</div>
 `;
 
 style.scoped.scss`

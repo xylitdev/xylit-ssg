@@ -4,8 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "LANG=de npx @xylit/ssg serve",
-    "build": "LANG=de npx @xylit/ssg build"
+    "start": "LANG=en npx @xylit/ssg serve",
+    "build": "LANG=en npx @xylit/ssg build"
   },
   "keywords": [],
   "author": "",

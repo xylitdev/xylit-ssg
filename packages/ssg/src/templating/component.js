@@ -4,7 +4,7 @@ import { html } from "./literals.js";
 
 const contexts = [];
 
-const childrenToSlots = children => {
+function childrenToSlots(children) {
   const slots =
     children.length === 1
       ? isObject(children[0])
@@ -19,11 +19,19 @@ const childrenToSlots = children => {
   });
 
   return slot;
-};
+}
+
+function extractPropsAndContext(properties) {
+  const context = { ...contexts.at(-1), ...properties?.[__Context] };
+  const props = { ...properties };
+  delete props[__Context];
+
+  return [props, context];
+}
 
 export const __Context = Symbol("Context");
 
-export const createContext = description => {
+export function createContext(description) {
   const identifier = Symbol(description);
 
   const provide = ctx => {
@@ -33,16 +41,15 @@ export const createContext = description => {
   const inject = () => contexts.at(-1)?.[identifier];
 
   return [provide, inject];
-};
+}
 
-export function createComponent({ scope, styles, template, context }) {
-  return async function Component(properties, ...children) {
-    const props = { ...properties };
-    const slot = childrenToSlots(children);
-    const ctx = { ...contexts.at(-1), ...props[__Context] };
+export function createComponent({ scope, styles, template }) {
+  return async (properties, ...children) => {
+    const [props, context] = extractPropsAndContext(properties);
+    const slots = childrenToSlots(children);
 
-    contexts.push(ctx);
-    const result = await template({ ...ctx, props, slot });
+    contexts.push(context);
+    const result = await template(props, slots, context);
     contexts.pop();
 
     return Object.assign(html`${result}`, { scope, styles });
