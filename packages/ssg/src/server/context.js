@@ -114,7 +114,11 @@ export const createContext = (req, res) => {
     sendResponse: async ({ body, headers, status, statusText }) => {
       const stream = Readable.fromWeb(body);
 
-      return ctx.sendStream(stream, { headers, status, statusText });
+      return ctx.sendStream(stream, {
+        headers: Object.fromEntries(headers?.entries?.() ?? []),
+        status,
+        statusText,
+      });
     },
   };
 

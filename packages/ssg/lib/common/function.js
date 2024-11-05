@@ -30,12 +30,12 @@ export function memoize(fn, options) {
   const resolve = options?.resolve ?? (firstArg => firstArg);
   const cache = new WeakMap();
 
-  return (...args) => {
+  return function memoized(...args) {
     const key = resolve(args[0]);
 
     if (cache.has(key)) return cache.get(key);
 
-    const value = fn(...args);
+    const value = fn.call(this, ...args);
     cache.set(key, value);
 
     return value;

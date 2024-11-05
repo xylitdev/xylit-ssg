@@ -1,3 +1,10 @@
+import { createReadStream } from "node:fs";
+import { pathToFileURL } from "node:url";
+
+import mime from "mime";
+
+import { Resource } from "./resource.js";
+
 export class ResourceProcessor {
   transforms = [];
 
@@ -13,13 +20,24 @@ export class ResourceProcessor {
     this.transforms.unshift(entry);
   }
 
-  async transform(resource) {
+  async transform(resource, options) {
     for (const [condition, transform] of this.transforms) {
       if (!condition(resource)) continue;
 
-      return transform(resource);
+      return transform(resource, options);
     }
 
     return resource;
+  }
+
+  async transformSrc(path, options) {
+    const resource = new Resource({
+      path,
+      url: pathToFileURL(path),
+      contents: createReadStream(path),
+      mediaType: mime.getType(path),
+    });
+
+    return this.transform(resource, options);
   }
 }

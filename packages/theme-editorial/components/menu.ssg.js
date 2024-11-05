@@ -1,4 +1,4 @@
-export default ({ items }, slots, { route }) => html`
+export default ({ items }, slots, { url }) => html`
   <nav id="menu">
     <header class="major">
       <h2>Menu</h2>
@@ -7,7 +7,7 @@ export default ({ items }, slots, { route }) => html`
       ${items.map(
         ({ href, name }) => html`
           <li>
-            <a class=${{ active: route?.path === href }} href="${href}">
+            <a class=${{ active: url.pathname === href }} href="${href}">
               ${name}
             </a>
           </li>

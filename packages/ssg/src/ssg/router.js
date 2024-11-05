@@ -1,6 +1,8 @@
 import { readdir } from "node:fs/promises";
 import { basename, relative, resolve, sep } from "node:path";
 
+import { createURL } from "#lib/common/url.js";
+
 import { remove } from "#lib/common/object.js";
 
 export class Router {
@@ -24,11 +26,14 @@ export class Router {
       const segments = relativePath.split(sep);
       const name = segments.pop();
       const base = this.isIndex(name) ? "" : basename(name, ext);
-      const pattern = ["", ...segments, base].join("/");
+      const pathname = ["", ...segments, base].join("/");
 
-      this.#entries[pattern] = {
-        pattern,
-        destination: path,
+      this.#entries[pathname] = {
+        path,
+        context: {
+          url: createURL("http://localhost:8080", { pathname: pathname }),
+          lang: process.env.LANG,
+        },
       };
     }
   }
@@ -74,10 +79,7 @@ export class Router {
   match(reqUrl) {
     const url = new URL(reqUrl, "file://");
     const path = url.pathname.replace(/^\/(.*)\/$/, "/$1");
-    const entry = this.#entries[path];
 
-    if (entry) {
-      return { ...entry, path };
-    }
+    return this.#entries[path];
   }
 }
