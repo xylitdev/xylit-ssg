@@ -6,19 +6,19 @@ import { load } from "cheerio";
 import { watch } from "chokidar";
 import mime from "mime";
 
-import { aggregate, debounce } from "#lib/common/function";
+import { aggregate, debounce } from "#lib/common/function.js";
 
-import config from "../config.js";
-import { Resource } from "../provision/resource.js";
-import { Router } from "../provision/router.js";
-import { LiveServer } from "../serving/live-server.js";
-import { invalidatePath } from "../ssg.js";
-import { ResourceProcessor } from "../transformation/resource-processor.js";
+import config from "#src/config.js";
+import { invalidatePath } from "#src/register.js";
+import { LiveServer } from "#src/server/live-server.js";
+import { Resource } from "#src/ssg/resource.js";
+import { ResourceProcessor } from "#src/ssg/resource-processor.js";
+import { Router } from "#src/ssg/router.js";
 
 import {
   supportedMediaTypes,
   transformStyle,
-} from "../transformation/transform-style.js";
+} from "#src/transforms/transform-style.js";
 
 import { generateRoute } from "./generate.js";
 

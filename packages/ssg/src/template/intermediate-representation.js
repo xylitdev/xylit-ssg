@@ -1,4 +1,9 @@
-import { isArray, isFunction, isNullish, isThenable } from "#lib/common/type";
+import {
+  isArray,
+  isFunction,
+  isNullish,
+  isThenable,
+} from "#lib/common/type.js";
 
 function* chunks(...hierarchy) {
   const stack = [];

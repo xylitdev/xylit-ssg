@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-
-import { serve } from "#api/serve.js";
-import { build } from "#api/build.js";
 import { program } from "commander";
+
+import { serve } from "#src/actions/serve.js";
+import { build } from "#src/actions/build.js";
 
 program
   .name("ssg")
@@ -13,16 +13,12 @@ program
   .command("serve")
   .alias("")
   .option("-p, --port <number>", "port number", 8080)
-  .action(async ({ port }) => {
-    await serve();
-  });
+  .action(serve);
 
 program
   .command("build")
-  .argument("[input]")
-  .action(async () => {
-    await build();
-    process.exit();
-  });
+  .argument("[input]", "input directory")
+  .argument("[output]", "output directory")
+  .action(build);
 
-program.parse();
+program.parseAsync();

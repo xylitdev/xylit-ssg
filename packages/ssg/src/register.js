@@ -2,7 +2,7 @@ import { register } from "node:module";
 import { pathToFileURL } from "node:url";
 import { MessageChannel } from "node:worker_threads";
 
-import { createCaller } from "#lib/remote-function";
+import { createCaller } from "#lib/remote-function.js";
 
 const { port1, port2 } = new MessageChannel();
 const { call } = createCaller(port1);

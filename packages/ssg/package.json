@@ -25,13 +25,13 @@
     "ssg": "bin/cli.js"
   },
   "exports": {
-    ".": "./exports/ssg.js",
-    "./api/*": "./src/api/*.js",
+    ".": "./src/register.js",
+    "./*": "./src/ssg/*.js",
+    "./actions/*": "./src/actions/*.js",
     "./runtime": "./src/runtime.js"
   },
   "imports": {
-    "#*": "./src/*",
-    "#lib/*": "./lib/*.js",
-    "#lib/common/*": "./lib/common/*.js"
+    "#lib/*": "./lib/*",
+    "#src/*": "./src/*"
   }
 }

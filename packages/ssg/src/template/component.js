@@ -1,4 +1,4 @@
-import { isObject, isFunction } from "#lib/common/type";
+import { isObject, isFunction } from "#lib/common/type.js";
 
 import { html } from "./literals.js";
 

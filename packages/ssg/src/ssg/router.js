@@ -1,7 +1,7 @@
 import { readdir } from "node:fs/promises";
 import { basename, relative, resolve, sep } from "node:path";
 
-import { remove } from "#lib/common/object";
+import { remove } from "#lib/common/object.js";
 
 export class Router {
   #conf;

@@ -2,10 +2,10 @@ import postcss from "postcss";
 import PostcssModulesPlugin from "postcss-modules";
 import { compileAsync, compileStringAsync } from "sass";
 
-import PostcssScopedPlugin from "#lib/postcss-scoped-plugin";
+import PostcssScopedPlugin from "#lib/postcss-scoped-plugin.js";
 
-import config from "../config.js";
-import { Resource } from "../provision/resource.js";
+import config from "#src/config.js";
+import { Resource } from "#src/ssg/resource.js";
 
 async function preprocessSass(resource) {
   let result;

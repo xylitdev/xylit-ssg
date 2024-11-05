@@ -2,15 +2,15 @@ import { pathToFileURL } from "node:url";
 
 import { load } from "cheerio";
 
-import { findMapLast } from "#lib/common/iterable";
-import { isBoolean, isNullish } from "#lib/common/type";
-import { memoize } from "#lib/common/function";
-import { ScopedDomHandler, AnyChunkParser } from "#lib/htmlparser2";
+import { memoize } from "#lib/common/function.js";
+import { findMapLast } from "#lib/common/iterable.js";
+import { isBoolean, isNullish } from "#lib/common/type.js";
+import { ScopedDomHandler, AnyChunkParser } from "#lib/htmlparser2.js";
 
-import { Resource } from "../provision/resource.js";
-import { __Context } from "../templating/component.js";
-import { less, scss, sass } from "../templating/literals.js";
-import { transformStyle } from "../transformation/transform-style.js";
+import { Resource } from "#src/ssg/resource.js";
+import { __Context } from "#src/template/component.js";
+import { less, scss, sass } from "#src/template/literals.js";
+import { transformStyle } from "#src/transforms/transform-style.js";
 
 const processStyleIR = memoize(async ir => {
   const resource = await generateStyle(ir);

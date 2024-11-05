@@ -1,10 +1,10 @@
 import { createHash } from "node:crypto";
 
-import { defineGetters } from "#lib/common/language";
-import { createURL } from "#lib/common/url";
+import { defineGetters } from "#lib/common/language.js";
+import { createURL } from "#lib/common/url.js";
 
-import { createComponent } from "./templating/component.js";
-import * as literals from "./templating//literals.js";
+import { createComponent } from "#src/template/component.js";
+import * as literals from "#src/template/literals.js";
 
 const createLiteral =
   ({ ssgMeta, lang, type }) =>
