@@ -4,6 +4,7 @@ import { basename, relative, resolve, sep } from "node:path";
 import { createURL } from "#lib/common/url.js";
 
 import { remove } from "#lib/common/object.js";
+import { get } from "node:http";
 
 export class Router {
   #conf;
@@ -74,6 +75,12 @@ export class Router {
 
   entries() {
     return Object.entries(this.#entries);
+  }
+
+  get(reqUrl) {
+    const entry = this.match(reqUrl);
+
+    return new SSGResponse(entry);
   }
 
   match(reqUrl) {

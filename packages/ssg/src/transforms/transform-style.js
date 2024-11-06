@@ -5,7 +5,7 @@ import { compileAsync, compileStringAsync } from "sass";
 import PostcssScopedPlugin from "#lib/postcss-scoped-plugin.js";
 
 import config from "#src/config.js";
-import { Resource } from "#src/ssg/resource.js";
+import { Resource } from "#src/core/resource.js";
 
 async function preprocessSass(resource) {
   let result;

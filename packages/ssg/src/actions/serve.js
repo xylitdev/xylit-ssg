@@ -7,9 +7,9 @@ import { aggregate, debounce } from "#lib/common/function.js";
 import config from "#src/config.js";
 import { invalidatePath } from "#src/register.js";
 import { LiveServer } from "#src/server/live-server.js";
-import { Generator } from "#src/ssg/generator.js";
-import { ResourceProcessor } from "#src/ssg/resource-processor.js";
-import { Router } from "#src/ssg/router.js";
+import { Generator } from "#src/core/generator.js";
+import { Processor } from "#src/core/processor.js";
+import { Router } from "#src/core/router.js";
 import { __Context } from "#src/template/component.js";
 
 import {
@@ -18,7 +18,7 @@ import {
 } from "#src/transforms/transform-style.js";
 
 export async function serve() {
-  const processor = new ResourceProcessor();
+  const processor = new Processor();
   const generator = new Generator(processor);
   const router = new Router();
   const server = new LiveServer(config.server);

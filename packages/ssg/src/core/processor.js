@@ -5,7 +5,7 @@ import mime from "mime";
 
 import { Resource } from "./resource.js";
 
-export class ResourceProcessor {
+export class Processor {
   transforms = [];
 
   addTransform(condition, transform) {
