@@ -17,15 +17,17 @@ export class Generator {
   }
 
   async generateStyle(ir) {
+    let mediaType = "text/css";
+
+    if (ir instanceof less) mediaType = "text/less";
+    if (ir instanceof sass) mediaType = "text/x-sass";
+    if (ir instanceof scss) mediaType = "text/x-scss";
+
     const resource = new Resource({
       contents: await ir.join(),
       url: ir.url,
-      mediaType: "text/css",
+      mediaType,
     });
-
-    if (ir instanceof less) resource.mediaType = "text/less";
-    if (ir instanceof sass) resource.mediaType = "text/x-sass";
-    if (ir instanceof scss) resource.mediaType = "text/x-scss";
 
     return resource;
   }
