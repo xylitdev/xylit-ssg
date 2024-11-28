@@ -10,8 +10,8 @@ import { Resource } from "./resource.js";
 import { Document } from "./document.js";
 
 export class Generator {
-  constructor(processor) {
-    this.processor = processor;
+  constructor(transform) {
+    this.transform = transform;
     this.generateDocument = memoize(this.generateDocument);
     this.generateStyle = memoize(this.generateStyle);
   }
@@ -24,8 +24,9 @@ export class Generator {
     if (ir instanceof scss) mediaType = "text/x-scss";
 
     const resource = new Resource({
-      contents: await ir.join(),
+      contents: [await ir.join()],
       url: ir.url,
+      meta: ir.meta,
       mediaType,
     });
 
@@ -41,9 +42,7 @@ export class Generator {
       const styleIRs = hierarchy.at(-1).styles || [];
 
       for (const styleIR of styleIRs) {
-        const resource = await this.generateStyle(styleIR).then(r =>
-          this.processor.transform(r, { mode: styleIR.mode })
-        );
+        const resource = await this.generateStyle(styleIR).then(this.transform);
 
         assets.add(resource);
       }

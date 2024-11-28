@@ -9,10 +9,20 @@ import * as literals from "#src/template/literals.js";
 const createLiteral =
   ({ ssgMeta, lang, type }) =>
   (strings, ...values) => {
+    const meta = {};
     const ir = Object.assign(literals[lang](strings, ...values), {
       url: ssgMeta.url,
-      mode: type === "scoped" ? `scoped/${ssgMeta.scope}` : type,
+      meta,
     });
+
+    if (type === "scoped") {
+      meta.scope = ssgMeta.scope;
+    } else if (type?.startsWith?.("module")) {
+      meta.cssModule = {
+        scopeBehaviour: type.endsWith("global") ? "global" : "local",
+        localsConvention: "camelCaseOnly",
+      };
+    }
 
     ssgMeta.styles.push(ir);
 

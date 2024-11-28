@@ -1,12 +1,14 @@
-import mime from "mime";
 import { createReadStream } from "node:fs";
 import { arrayBuffer, blob, json, text } from "node:stream/consumers";
+import { pathToFileURL } from "node:url";
+
+import mime from "mime";
 
 export class Resource {
   static fromFile(path, encoding) {
     return new Resource({
-      path,
-      isVirtual: false,
+      virtual: false,
+      url: pathToFileURL(path).toString(),
       async *contents() {
         for await (const chunk of createReadStream(path, { encoding })) {
           yield chunk;
@@ -15,25 +17,34 @@ export class Resource {
     });
   }
 
-  constructor({ contents, isVirtual, mediaType, path, ...other }) {
-    this.isVirtual = (!path || !!isVirtual) ?? true;
-    this.mediaType = mediaType ?? mime.getType(path);
-    this.path = path;
+  constructor({ contents, mediaType, meta, url, virtual }) {
+    this.url = url;
+    this.contents = contents;
+    this.mediaType = mediaType ?? mime.getType(url);
+    this.virtual = (!url || virtual) ?? true;
+    this.meta = { ...meta };
 
-    if (typeof contents === "string") {
-      this.contents = [contents];
-    } else if (contents[Symbol.iterator] || contents[Symbol.asyncIterator]) {
-      this.contents = contents;
-    } else if (typeof contents === "function") {
-      this.contents = { [Symbol.asyncIterator]: contents };
-    }
-
-    Object.assign(this, other);
     Object.freeze(this);
   }
 
   async *[Symbol.asyncIterator]() {
-    for await (const chunk of this.contents) {
+    let contents = await (typeof this.contents === "function"
+      ? this.contents()
+      : this.contents);
+
+    if (contents == null) return;
+
+    if (typeof contents === "string") {
+      contents = [contents];
+    } else if (contents[Symbol.iterator] || contents[Symbol.asyncIterator]) {
+      contents = contents;
+    } else if (typeof contents.next === "function") {
+      contents = { [Symbol.asyncIterator]: () => contents };
+    } else {
+      contents = [contents];
+    }
+
+    for await (const chunk of contents) {
       yield chunk;
     }
   }
@@ -59,10 +70,10 @@ export class Resource {
   }
 
   async import() {
-    if (this.isVirtual) {
+    if (this.virtual) {
       return import(`data:text/javascript, ${await this.text()}`);
-    } else if (this.path) {
-      return import(this.path);
+    } else {
+      return import(this.url);
     }
   }
 

@@ -8,18 +8,20 @@ import config from "#src/config.js";
 import { invalidatePath } from "#src/register.js";
 import { LiveServer } from "#src/server/live-server.js";
 import { Generator } from "#src/core/generator.js";
-import { Processor } from "#src/core/processor.js";
+import { createPipeline } from "#src/core/pipeline.js";
+import { Resource } from "#src/core/resource.js";
 import { Router } from "#src/core/router.js";
+import { createCssProcessor } from "#src/processors/css-processor.js";
+import { createSassProcessor } from "#src/processors/sass-processor.js";
 import { __Context } from "#src/template/component.js";
 
-import {
-  supportedMediaTypes,
-  transformStyle,
-} from "#src/transforms/transform-style.js";
-
 export async function serve() {
-  const processor = new Processor();
-  const generator = new Generator(processor);
+  const { transform } = createPipeline(
+    createSassProcessor(config.style.sass),
+    createCssProcessor()
+  );
+
+  const generator = new Generator(transform);
   const router = new Router();
   const server = new LiveServer(config.server);
 
@@ -55,14 +57,15 @@ export async function serve() {
       return document.toResponse();
     } else if ([".sass", ".scss", ".css"].some(ext => req.url.endsWith(ext))) {
       const path = join(process.cwd(), req.url);
-      const resource = await processor.transformSrc(path);
+
+      let resource = Resource.fromFile(path, "utf-8");
+      resource = await transform(resource);
 
       return resource.toResponse();
     }
   });
 
   await router.scan(config.input);
-  processor.addTransform(supportedMediaTypes, transformStyle);
 
   watch(config.cwd, {
     persistent: true,
