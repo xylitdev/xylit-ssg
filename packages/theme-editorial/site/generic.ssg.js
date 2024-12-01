@@ -1,4 +1,4 @@
-import Shell from "../components/shell.ssg.js";
+import Shell from "./_components/shell.ssg.js";
 import { LoremIpsum } from "lorem-ipsum";
 
 const lorem = new LoremIpsum({

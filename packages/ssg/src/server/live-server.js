@@ -37,6 +37,10 @@ export class LiveServer {
     this.#server.on("request", this.#onRequest);
   }
 
+  get base() {
+    return new URL(`http://localhost:${this.#config.port}`);
+  }
+
   #onRequest = async (req, res) => {
     const ctx = createContext(req, res);
 
@@ -68,7 +72,7 @@ export class LiveServer {
         .sendStream(stream, { "Content-Type": mime.getType(path) })
         .catch(() => {
           const html = Page404({ liveScript: this.liveScript });
-          return ctx.sendHtml(html);
+          return ctx.sendHtml(html, { status: 400 });
         });
     }
   };

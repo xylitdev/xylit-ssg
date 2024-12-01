@@ -1,4 +1,4 @@
-import Shell from "../components/shell.ssg.js";
+import Shell from "./_components/shell.ssg.js";
 
 const features = [
   { icon: "fa-gem", title: "Portitor ullamcorper" },

@@ -1,5 +1,5 @@
-import Shell from "../components/shell.ssg.js";
-import Box from "../components/box.ssg.js";
+import Shell from "./_components/shell.ssg.js";
+import Box from "./_components/box.ssg.js";
 
 export default Shell(
   { title: "Elements" },

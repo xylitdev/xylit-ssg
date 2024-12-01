@@ -1,7 +1,8 @@
 export default {
+  input: "site",
   style: {
     sass: {
-      loadPaths: ["styles", "../../node_modules"],
+      loadPaths: ["site/styles", "../../node_modules"],
     },
   },
 };
