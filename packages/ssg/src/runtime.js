@@ -3,8 +3,8 @@ import { createHash } from "node:crypto";
 import { defineGetters } from "#lib/common/language.js";
 import { createURL } from "#lib/common/url.js";
 
-import { createComponent } from "#src/template/component.js";
-import * as literals from "#src/template/literals.js";
+import { createComponent } from "#src/core/component.js";
+import * as literals from "#src/core/literals.js";
 
 const createLiteral =
   ({ ssgMeta, lang, type }) =>

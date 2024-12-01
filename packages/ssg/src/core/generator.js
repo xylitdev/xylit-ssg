@@ -1,22 +1,16 @@
+import { load } from "cheerio";
+
 import { memoize } from "#lib/common/function.js";
 import { findMapLast } from "#lib/common/iterable.js";
 import { isBoolean, isNullish } from "#lib/common/type.js";
 import { ScopedDomHandler, AnyChunkParser } from "#lib/htmlparser2.js";
 
-import { __Context } from "#src/template/component.js";
-import { less, scss, sass } from "#src/template/literals.js";
-
+import { __Context } from "./component.js";
+import { less, scss, sass } from "./literals.js";
 import { Resource } from "./resource.js";
-import { Document } from "./document.js";
 
-export class Generator {
-  constructor(transform) {
-    this.transform = transform;
-    this.generateDocument = memoize(this.generateDocument);
-    this.generateStyle = memoize(this.generateStyle);
-  }
-
-  async generateStyle(ir) {
+export function createGenerator(transform) {
+  const generateStyle = memoize(async ir => {
     let mediaType = "text/css";
 
     if (ir instanceof less) mediaType = "text/less";
@@ -31,9 +25,9 @@ export class Generator {
     });
 
     return resource;
-  }
+  });
 
-  async generateDocument(ir) {
+  const generateDocument = memoize(async ir => {
     const handler = new ScopedDomHandler();
     const parser = new AnyChunkParser(handler);
     const assets = new Set();
@@ -42,7 +36,7 @@ export class Generator {
       const styleIRs = hierarchy.at(-1).styles || [];
 
       for (const styleIR of styleIRs) {
-        const resource = await this.generateStyle(styleIR).then(this.transform);
+        const resource = await generateStyle(styleIR).then(transform);
 
         assets.add(resource);
       }
@@ -54,10 +48,32 @@ export class Generator {
     }
 
     parser.end();
-    const result = { document: new Document(handler.dom), assets: [...assets] };
 
-    return result;
-  }
+    return { dom: handler.dom, assets: [...assets] };
+  });
+
+  return {
+    isTemplate(path) {
+      return path.endsWith(".ssg.js");
+    },
+
+    async generate(path, context) {
+      const { default: Component } = await import(path);
+      const ir = await Component({ [__Context]: context });
+
+      const { dom, assets } = await generateDocument(ir);
+      const $ = load(dom);
+
+      const head = $("head");
+      for (const asset of assets) {
+        if (asset instanceof Resource) {
+          $("head").append(`<style>${asset.contents}</style>`);
+        } else {
+          head.append(asset);
+        }
+      }
+
+      return $;
+    },
+  };
 }
-
-Generator.prototype.generateDocument;

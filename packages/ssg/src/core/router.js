@@ -6,8 +6,6 @@ export function createRouter({ input, lang, base }) {
     const url = new URL(urlLike, base);
     url.pathname = url.pathname.replace(/\/$/, "");
 
-    console.log(url.pathname);
-
     return url;
   }
 

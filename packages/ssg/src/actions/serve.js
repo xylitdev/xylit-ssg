@@ -3,15 +3,14 @@ import { watch } from "chokidar";
 import { aggregate, debounce } from "#lib/common/function.js";
 
 import config from "#src/config.js";
-import { invalidatePath } from "#src/register.js";
-import { LiveServer } from "#src/server/live-server.js";
-import { Generator } from "#src/core/generator.js";
+import { createGenerator } from "#src/core/generator.js";
 import { createPipeline } from "#src/core/pipeline.js";
 import { Resource } from "#src/core/resource.js";
 import { createRouter } from "#src/core/router.js";
+import { invalidatePath } from "#src/register.js";
 import { createCssProcessor } from "#src/processors/css-processor.js";
 import { createSassProcessor } from "#src/processors/sass-processor.js";
-import { __Context } from "#src/template/component.js";
+import { LiveServer } from "#src/server/live-server.js";
 
 export async function serve() {
   const { transform } = createPipeline(
@@ -19,7 +18,7 @@ export async function serve() {
     createCssProcessor()
   );
 
-  const generator = new Generator(transform);
+  const { generate, isTemplate } = createGenerator(transform);
   const server = new LiveServer(config.server);
   const router = createRouter({
     input: config.input,
@@ -52,13 +51,13 @@ export async function serve() {
 
     const { path, url, lang } = entry;
 
-    if (path.endsWith(".ssg.js")) {
-      const { default: Component } = await import(path);
-      const ir = await Component({ [__Context]: { url, lang } });
-      const { document, assets } = await generator.generateDocument(ir);
-      document.mount(...assets, `<script>${server.liveScript}</script>`);
+    if (isTemplate(path)) {
+      const $ = await generate(path, { url, lang });
+      $("head").append(`<script>${server.liveScript}</script>`);
 
-      return document.toResponse();
+      return new Response($.html(), {
+        headers: { "Content-Type": "text/html" },
+      });
     } else {
       const resource = Resource.fromFile(path);
       const transformed = await transform(resource);
