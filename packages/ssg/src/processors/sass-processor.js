@@ -14,6 +14,7 @@ export function createSassProcessor(options) {
       }
 
       return {
+        path: resource?.path?.replace?.(/\.(scss|sass)/, ".css"),
         mediaType: "text/css",
         contents: [result.css],
       };

@@ -3,28 +3,15 @@ import { watch } from "chokidar";
 import { aggregate, debounce } from "#lib/common/function.js";
 
 import config from "#src/config.js";
-import { createGenerator } from "#src/core/generator.js";
-import { createPipeline } from "#src/core/pipeline.js";
 import { Resource } from "#src/core/resource.js";
-import { createRouter } from "#src/core/router.js";
 import { invalidatePath } from "#src/register.js";
-import { createCssProcessor } from "#src/processors/css-processor.js";
-import { createSassProcessor } from "#src/processors/sass-processor.js";
 import { LiveServer } from "#src/server/live-server.js";
 
-export async function serve() {
-  const { transform } = createPipeline(
-    createSassProcessor(config.style.sass),
-    createCssProcessor()
-  );
+import { setup } from "./setup.js";
 
-  const { generate, isTemplate } = createGenerator(transform);
+export async function serve() {
+  const { isTemplate, generate, router, transform } = setup(config);
   const server = new LiveServer(config.server);
-  const router = createRouter({
-    input: config.input,
-    base: server.base,
-    lang: process.env.LANG,
-  });
 
   const onAdd = debounce(async () => {
     server.send("reload");

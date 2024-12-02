@@ -1,6 +1,9 @@
-import { lstat } from "node:fs/promises";
+import { createWriteStream } from "node:fs";
+import { mkdir } from "node:fs/promises";
+import { dirname } from "node:path";
+import { pipeline } from "node:stream/promises";
 
-export const fileExists = path =>
-  lstat(path)
-    .then(stat => stat.isFile())
-    .catch(() => false);
+export async function write(path, contents) {
+  await mkdir(dirname(path), { recursive: true });
+  await pipeline(contents, createWriteStream(path));
+}
