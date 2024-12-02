@@ -7,12 +7,9 @@ const graph = new DepGraph({ circular: true });
 const versions = {};
 let runtimeURL;
 
-export async function initialize({ port, runtime }) {
-  runtimeURL = runtime;
-  const { on } = createReceiver(port);
-
-  on({
-    async invalidate(...urls) {
+export async function initialize({ port }) {
+  createReceiver(port, {
+    async invalidateUrl(...urls) {
       const versionsToBump = new Set();
 
       urls

@@ -1,72 +1,49 @@
 import { randomUUID } from "node:crypto";
 
-export function createCaller(port, ident = "") {
-  const identifier = `RemoteFunctionCall:${ident}`;
-  const pendings = new Map();
+export function createCaller(port, name) {
+  return (...args) =>
+    new Promise((resolve, reject) => {
+      const nonce = randomUUID();
+      const req = JSON.stringify({ name, nonce, args });
 
-  port.on("message", msg => {
-    const parsed = JSON.parse(msg);
+      const onMessage = res => {
+        const msg = JSON.parse(res);
 
-    if (identifier !== parsed?.identifier) return;
+        if (msg.nonce !== nonce) return;
 
-    const pending = pendings.get(parsed.nonce);
-    const { status, data } = parsed;
+        port.off("message", onMessage);
 
-    if (pending) {
-      pendings.delete(pending);
-      pending[status](data);
-    }
-  });
+        if (msg.ok) {
+          resolve(msg.result);
+        } else {
+          reject(msg.result);
+        }
+      };
 
-  return {
-    async call(name, ...args) {
-      return new Promise((resolve, reject) => {
-        const nonce = randomUUID();
-        const msg = {
-          name,
-          nonce,
-          identifier,
-          data: args,
-        };
-
-        pendings.set(nonce, { resolve, reject });
-
-        port.postMessage(JSON.stringify(msg));
-      });
-    },
-  };
+      port.on("message", onMessage);
+      port.postMessage(req);
+    });
 }
 
-export function createReceiver(port, ident = "") {
-  const identifier = `RemoteFunctionCall:${ident}`;
-  const _actions = {};
-
-  port.on("message", async msg => {
-    const parsed = JSON.parse(msg);
-
-    if (identifier !== parsed.identifier) return;
-
-    const action = _actions[parsed.name];
-    const answer = {
-      name: parsed.name,
-      nonce: parsed.nonce,
-      identifier,
-    };
+export function createReceiver(port, actions) {
+  const onMessage = async req => {
+    const { name, args, nonce } = JSON.parse(req);
+    const res = { name, nonce };
 
     try {
-      answer.data = await action(...parsed.data);
-      answer.status = "resolve";
+      res.ok = true;
+      res.result = await actions[name](...args);
     } catch (error) {
-      answer.data = error;
-      answer.status = "reject";
+      res.ok = false;
+      res.result = error;
     }
 
-    port.postMessage(JSON.stringify(answer));
-  });
+    port.postMessage(JSON.stringify(res));
+  };
 
-  return {
-    on(actions) {
-      Object.assign(_actions, actions);
-    },
+  port.on("message", onMessage);
+
+  return () => {
+    port.off("message", onMessage);
   };
 }

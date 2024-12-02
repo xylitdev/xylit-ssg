@@ -5,7 +5,8 @@ import { MessageChannel } from "node:worker_threads";
 import { createCaller } from "#lib/remote-function.js";
 
 const { port1, port2 } = new MessageChannel();
-const { call } = createCaller(port1);
+
+export const invalidateUrl = createCaller(port1, "invalidateUrl");
 
 register("../src/loaders/dep-loader.js", {
   parentURL: import.meta.url,
@@ -14,10 +15,6 @@ register("../src/loaders/dep-loader.js", {
 });
 
 register("../src/loaders/ssg-loader.js", import.meta.url);
-
-export async function invalidateUrl(...urls) {
-  return call("invalidate", ...urls);
-}
 
 export async function invalidatePath(...paths) {
   const urls = paths.map(path => pathToFileURL(path).toString());
