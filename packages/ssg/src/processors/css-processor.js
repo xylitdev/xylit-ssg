@@ -27,8 +27,8 @@ export function createCssProcessor(options) {
 
       const css = await resource.text();
       const result = await postcss(plugins).process(css, {
-        from: resource.url.toString(),
-        to: resource.url.toString(),
+        from: resource.path | "style.css",
+        to: resource.path | "style.css",
       });
 
       return {

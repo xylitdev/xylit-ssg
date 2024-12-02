@@ -19,7 +19,6 @@ export function createGenerator(transform) {
 
     const resource = new Resource({
       contents: [await ir.join()],
-      url: ir.url,
       meta: ir.meta,
       mediaType,
     });

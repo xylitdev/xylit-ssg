@@ -5,7 +5,6 @@ import { createReceiver } from "#lib/remote-function.js";
 
 const graph = new DepGraph({ circular: true });
 const versions = {};
-let runtimeURL;
 
 export async function initialize({ port }) {
   createReceiver(port, {
@@ -30,16 +29,14 @@ export async function initialize({ port }) {
 export async function resolve(specifier, context, nextResolve) {
   const result = await nextResolve(specifier, context);
 
-  if (result.url !== runtimeURL) {
-    const node = createURL(result.url, { search: "" }).toString();
-    graph.addNode(node);
+  const node = createURL(result.url, { search: "" }).toString();
+  graph.addNode(node);
 
-    if (context.parentURL && context.parentURL !== runtimeURL) {
-      const parent = createURL(context.parentURL, { search: "" }).toString();
+  if (context.parentURL) {
+    const parent = createURL(context.parentURL, { search: "" }).toString();
 
-      graph.addNode(parent);
-      graph.addDependency(parent, node);
-    }
+    graph.addNode(parent);
+    graph.addDependency(parent, node);
   }
 
   if (versions[result.url]) {

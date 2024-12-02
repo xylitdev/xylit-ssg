@@ -10,7 +10,7 @@ export const invalidateUrl = createCaller(port1, "invalidateUrl");
 
 register("../src/loaders/dep-loader.js", {
   parentURL: import.meta.url,
-  data: { port: port2, runtime: import.meta.url },
+  data: { port: port2 },
   transferList: [port2],
 });
 

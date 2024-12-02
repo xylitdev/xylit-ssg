@@ -11,7 +11,6 @@ const createLiteral =
   (strings, ...values) => {
     const meta = {};
     const ir = Object.assign(literals[lang](strings, ...values), {
-      url: ssgMeta.url,
       meta,
     });
 

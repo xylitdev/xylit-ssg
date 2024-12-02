@@ -1,5 +1,3 @@
-import { fileURLToPath } from "node:url";
-
 import { compileAsync, compileStringAsync } from "sass";
 
 export function createSassProcessor(options) {
@@ -12,8 +10,7 @@ export function createSassProcessor(options) {
         const source = await resource.text();
         result = await compileStringAsync(source, options);
       } else {
-        const path = fileURLToPath(resource.url);
-        result = await compileAsync(path, options);
+        result = await compileAsync(resource.path, options);
       }
 
       return {
