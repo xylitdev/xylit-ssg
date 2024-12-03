@@ -1,17 +1,49 @@
 {
-  "name": "xylit-ssg",
+  "name": "@xylit/ssg",
   "version": "0.0.1",
-  "type": "module",
-  "scripts": {
-    "start": "npm run start --workspace=theme-editorial",
-    "build": "npm run build --workspace=theme-editorial"
+  "description": "A pure static site generator",
+  "homepage": "https://xylit.dev/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xylitdev/xylit-ssg.git"
   },
-  "workspaces": [
-    "packages/ssg",
-    "packages/theme-editorial"
+  "keywords": [
+    "html",
+    "ssg",
+    "static site generator",
+    "template engine",
+    "xylit"
   ],
-  "keywords": [],
-  "author": "",
+  "author": "René Kaesler <renekaesler@gmail.com> (https://renekaesler.com)",
   "license": "ISC",
-  "description": ""
+  "type": "module",
+  "dependencies": {
+    "acorn": "^8.12.1",
+    "acorn-walk": "^8.3.4",
+    "cheerio": "^1.0.0",
+    "chokidar": "^4.0.1",
+    "commander": "^12.1.0",
+    "dependency-graph": "^1.0.0",
+    "install": "^0.13.0",
+    "magic-string": "^0.30.11",
+    "mime": "^4.0.4",
+    "npm": "^10.9.0",
+    "postcss-modules": "^6.0.0",
+    "postcss-selector-parser": "^6.1.2",
+    "sass": "^1.79.3",
+    "ws": "^8.18.0"
+  },
+  "bin": {
+    "ssg": "bin/cli.js"
+  },
+  "exports": {
+    ".": "./src/register.js",
+    "./*": "./src/ssg/*.js",
+    "./actions/*": "./src/actions/*.js",
+    "./runtime": "./src/runtime.js"
+  },
+  "imports": {
+    "#lib/*": "./lib/*",
+    "#src/*": "./src/*"
+  }
 }
