@@ -52,7 +52,7 @@ export async function load(urlStr, context, next) {
 
   return {
     format: "module",
-    shortCircuit: true,
+    shortCircuit: false,
     source: await compile(source.toString()),
   };
 }
