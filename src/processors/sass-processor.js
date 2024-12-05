@@ -20,6 +20,6 @@ export async function createSassProcessor(options) {
       },
     }))
     .catch(() => {
-      console.info("INFO: sass processing disabled. No Processor availale.");
+      console.info("INFO: sass processing disabled. No Processor available.");
     });
 }
