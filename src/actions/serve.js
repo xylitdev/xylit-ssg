@@ -10,7 +10,7 @@ import { LiveServer } from "#src/server/live-server.js";
 import { setup } from "./setup.js";
 
 export async function serve() {
-  const { isTemplate, generate, router, transform } = setup(config);
+  const { isTemplate, generate, router, transform } = await setup(config);
   const server = new LiveServer(config.server);
 
   const onAdd = debounce(async () => {

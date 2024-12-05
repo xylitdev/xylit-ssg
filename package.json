@@ -33,8 +33,7 @@
     "ws": "^8.18.0"
   },
   "peerDependencies": {
-    "postcss-modules": "^6.0.0",
-    "sass": "^1.79.3"
+    "postcss-modules": "^6.0.0"
   },
   "bin": {
     "ssg": "bin/cli.js"

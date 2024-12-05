@@ -12,7 +12,7 @@ import { setup } from "./setup.js";
 
 export async function build() {
   const { input, output } = config;
-  const { isTemplate, generate, router, transform } = setup(config);
+  const { isTemplate, generate, router, transform } = await setup(config);
 
   const [templates, resources] = await partition(router, entry =>
     isTemplate(entry.path)

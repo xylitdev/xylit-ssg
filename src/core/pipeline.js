@@ -2,10 +2,12 @@ import { remove } from "#lib/common/set.js";
 
 import { Resource } from "./resource.js";
 
-export function createPipeline(...processors) {
+export async function createPipeline(...processors) {
+  const available = (await Promise.all(processors)).filter(proc => proc);
+
   return {
     async transform(resource, options) {
-      const unused = new Set(processors);
+      const unused = new Set(available);
 
       while (unused.size) {
         const processor = remove(unused, p => p.condition(resource));

@@ -4,8 +4,8 @@ import { createRouter } from "#src/core/router.js";
 import { createCssProcessor } from "#src/processors/css-processor.js";
 import { createSassProcessor } from "#src/processors/sass-processor.js";
 
-export function setup(config) {
-  const { transform } = createPipeline(
+export async function setup(config) {
+  const { transform } = await createPipeline(
     createSassProcessor(config.style.sass),
     createCssProcessor()
   );
