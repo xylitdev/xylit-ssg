@@ -45,13 +45,14 @@ const compile = async source => {
 
 export async function load(urlStr, context, next) {
   const url = new URL(urlStr);
-  const result = await next(urlStr, context);
 
-  if (!url.pathname.endsWith(".ssg.js")) return result;
+  if (!url.pathname.endsWith(".ssg.js")) return next(urlStr, context);
+
+  const { source } = await next(urlStr, { ...context, format: "module" });
 
   return {
     format: "module",
     shortCircuit: true,
-    source: await compile(result.source.toString()),
+    source: await compile(source.toString()),
   };
 }
