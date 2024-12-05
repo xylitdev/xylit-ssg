@@ -1,6 +1,3 @@
-import { readFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
-
 import { parse } from "acorn";
 import * as walk from "acorn-walk";
 import MagicString from "magic-string";
@@ -10,7 +7,7 @@ const fnTypes = ["ArrowFunctionExpression", "FunctionDeclaration"];
 const injectImports = (source, ast) => {
   source.prepend(
     [
-      'import { initialize as __initializeSSG } from "#src/runtime.js";',
+      'import { initialize as __initializeSSG } from "@xylit/ssg/runtime";',
       "const __SSG = __initializeSSG(import.meta);",
       "const { html, style } = __SSG",
       "",
@@ -32,8 +29,8 @@ const wrapDefaultExport = (source, ast) => {
   });
 };
 
-const compile = async path => {
-  const source = new MagicString(await readFile(path, { encoding: "utf-8" }));
+const compile = async source => {
+  source = new MagicString(source);
 
   const ast = parse(source.toString(), {
     sourceType: "module",
@@ -48,13 +45,13 @@ const compile = async path => {
 
 export async function load(urlStr, context, next) {
   const url = new URL(urlStr);
-  if (!url.pathname.endsWith(".ssg.js")) return next(urlStr, context);
+  const result = await next(urlStr, context);
 
-  const path = fileURLToPath(urlStr);
+  if (!url.pathname.endsWith(".ssg.js")) return result;
 
   return {
     format: "module",
     shortCircuit: true,
-    source: await compile(path),
+    source: await compile(result.source.toString()),
   };
 }

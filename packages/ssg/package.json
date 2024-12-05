@@ -1,6 +1,6 @@
 {
   "name": "@xylit/ssg",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A pure static site generator",
   "homepage": "https://ssg.xylit.dev/",
   "repository": {
