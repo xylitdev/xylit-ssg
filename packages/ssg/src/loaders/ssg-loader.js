@@ -10,7 +10,7 @@ const fnTypes = ["ArrowFunctionExpression", "FunctionDeclaration"];
 const injectImports = (source, ast) => {
   source.prepend(
     [
-      'import { initialize as __initializeSSG } from "@xylit/ssg/runtime";',
+      'import { initialize as __initializeSSG } from "#src/runtime.js";',
       "const __SSG = __initializeSSG(import.meta);",
       "const { html, style } = __SSG",
       "",
