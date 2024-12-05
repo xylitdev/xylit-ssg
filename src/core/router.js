@@ -1,5 +1,5 @@
 import { readdir } from "node:fs/promises";
-import { join, relative } from "node:path";
+import { join, posix, relative, sep } from "node:path";
 
 export function createRouter({ input, lang, base }) {
   function createUrl(urlLike) {
@@ -36,6 +36,12 @@ export function createRouter({ input, lang, base }) {
   }
 
   return {
+    pathToUrl(path) {
+      const url = relative(input, path).split(sep).join(posix.sep);
+
+      return new URL(url, base);
+    },
+
     async *[Symbol.asyncIterator]() {
       for await (const path of walkFiles(input)) {
         const relativePath = relative(input, path);

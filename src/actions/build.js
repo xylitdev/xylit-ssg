@@ -25,12 +25,12 @@ export async function build() {
     const resource = Resource.fromFile(path);
     const transformed = await transform(resource);
 
-    const relativeSrc = relative(input, path);
-    const relativeDest = relative(input, transformed.path);
-    const dest = join(output, relativeDest);
+    const srcUrl = router.pathToUrl(resource.path);
+    const destUrl = router.pathToUrl(transformed.path);
+    const dest = join(output, destUrl.pathname);
 
     await write(dest, transformed.contents);
-    resourceMap[relativeSrc] = relativeDest;
+    resourceMap[srcUrl.pathname] = destUrl.pathname;
   });
 
   await concurrent(templates, async ({ path, url, lang }) => {
@@ -38,10 +38,10 @@ export async function build() {
     const $ = await generate(path, { url, lang });
 
     $("link[href]").each((i, el) => {
-      const href = resourceMap[el.attribs.href];
+      const href = new URL(el.attribs.href, url).pathname;
 
-      if (href) {
-        el.attribs.href = href;
+      if (resourceMap[href]) {
+        el.attribs.href = resourceMap[href];
       }
     });
 
