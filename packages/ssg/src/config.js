@@ -5,7 +5,7 @@ const configFile = resolve(process.cwd(), "ssg.config.js");
 
 const conf = await import(configFile)
   .then(module => Object.assign(config, module.default))
-  .catch(() => {});
+  .catch(() => ({}));
 
 const cwd = process.cwd();
 
