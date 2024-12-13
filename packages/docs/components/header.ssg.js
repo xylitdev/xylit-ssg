@@ -1,7 +1,7 @@
 const links = [
   { label: "Home", href: "/" },
   { label: "Getting Started", href: "/getting-started" },
-  { label: "GitHub", href: "https://github.com/xylitdev" },
+  { label: "GitHub", href: "https://github.com/xylitdev/xylit-ssg" },
 ];
 
 export default (params, slots, { url }) => html`
