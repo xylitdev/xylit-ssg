@@ -9,7 +9,7 @@ Being Less Bloated... Being More Straightforward!
 
 ## Getting Started
 
-Please follow the [official documentation](https://ssg.xylit.dev/getting-started/installation-and-setup/).
+Please follow the [official documentation](https://ssg.xylit.dev/getting-started/).
 
 ## `.ssg.js`-Format
 
