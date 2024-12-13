@@ -1,5 +1,6 @@
 {
   "name": "@xylit/ssg-workspace",
+  "type": "module",
   "workspaces": [
     "packages/create-ssg",
     "packages/docs",
