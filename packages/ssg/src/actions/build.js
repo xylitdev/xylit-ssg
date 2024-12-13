@@ -1,5 +1,5 @@
 import { rm } from "node:fs/promises";
-import { join, relative } from "node:path";
+import { join } from "node:path";
 
 import { concurrent } from "#lib/common/async.js";
 import { partition } from "#lib/common/async-iterable.js";
@@ -15,7 +15,7 @@ export async function build() {
   const { isTemplate, generate, router, transform } = await setup(config);
 
   const [templates, resources] = await partition(router, entry =>
-    isTemplate(entry.path)
+    isTemplate(entry.path),
   );
 
   await rm(output, { recursive: true, force: true });

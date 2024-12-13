@@ -11,7 +11,7 @@ const cwd = process.cwd();
 
 export default {
   cwd,
-  input: resolve(cwd, conf.input ?? cwd),
+  input: resolve(cwd, conf.input ?? "site"),
   output: resolve(cwd, conf.output ?? "_site"),
   style: {
     cssModules: (cm => ({

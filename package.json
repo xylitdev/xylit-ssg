@@ -1,0 +1,15 @@
+{
+  "name": "@xylit/ssg-workspace",
+  "workspaces": [
+    "packages/create-ssg",
+    "packages/docs",
+    "packages/ssg"
+  ],
+  "scripts": {
+    "serve": "npm run serve --workspace docs",
+    "build:docs": "npm run build --workspace docs"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2"
+  }
+}

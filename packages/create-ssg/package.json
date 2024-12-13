@@ -1,0 +1,19 @@
+{
+  "name": "@xylit/create-ssg",
+  "version": "0.0.1",
+  "description": "Creates a basic ssg project",
+  "homepage": "https://ssg.xylit.dev/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xylitdev/xylit-ssg.git"
+  },
+  "author": "René Kaesler <renekaesler@gmail.com> (https://renekaesler.com)",
+  "license": "ISC",
+  "type": "module",
+  "bin": "index.js",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "inquirer": "^12.2.0"
+  }
+}

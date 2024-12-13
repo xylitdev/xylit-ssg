@@ -15,7 +15,15 @@ export async function initialize({ port }) {
         .map(url => createURL(url, { search: "" }).toString())
         .forEach(url => {
           versionsToBump.add(url);
-          graph.dependantsOf(url).forEach(depUrl => versionsToBump.add(depUrl));
+
+          try {
+            graph
+              .dependantsOf(url)
+              .forEach(depUrl => versionsToBump.add(depUrl));
+          } catch {
+            // graph.dependantsOf throws error for unknown url.
+            // unknown urls can be ignored, cause they never have been loaded.
+          }
         });
 
       for (const url of versionsToBump) {

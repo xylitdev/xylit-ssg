@@ -1,17 +1,16 @@
 {
   "name": "docs",
+  "version": "0.0.0",
   "type": "module",
-  "version": "0.0.1",
+  "private": "true",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "serve": "npx @xylit/ssg serve",
+    "build": "npx @xylit/ssg build"
   },
-  "dependencies": {
-    "@astrojs/starlight": "^0.29.2",
-    "astro": "^4.16.10",
-    "sharp": "^0.32.5"
+  "devDependencies": {
+    "@xylit/ssg": "^0.0.8",
+    "postcss": "^8.4.49",
+    "postcss-modules": "^6.0.1",
+    "sass": "^1.83.0"
   }
 }
