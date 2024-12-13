@@ -42,7 +42,7 @@ export default html`
           questionaire while using the default settings:
         </p>
 
-        <pre><code>npm create @xylit/ssg my-website -- --yes</code></pre>
+        <pre><code>npm create @xylit/ssg@latest my-website -- --yes</code></pre>
 
         <h2>Manual Setup</h2>
 
