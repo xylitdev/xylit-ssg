@@ -1,4 +1,4 @@
-import { load } from "cheerio";
+import { load } from "cheerio/slim";
 
 import { memoize } from "#lib/common/function.js";
 import { findMapLast } from "#lib/common/iterable.js";
