@@ -23,7 +23,7 @@ export function createGenerator(transform) {
       mediaType,
     });
 
-    return resource;
+    return transform(resource);
   });
 
   const generateDocument = memoize(async ir => {
@@ -35,7 +35,7 @@ export function createGenerator(transform) {
       const styleIRs = hierarchy.at(-1).styles || [];
 
       for (const styleIR of styleIRs) {
-        const resource = await generateStyle(styleIR).then(transform);
+        const resource = await generateStyle(styleIR);
 
         assets.add(resource);
       }
