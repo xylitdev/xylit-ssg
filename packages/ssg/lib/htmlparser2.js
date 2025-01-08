@@ -1,6 +1,7 @@
 import { Parser, DomHandler } from "htmlparser2";
 
 import { transform } from "./common/collection.js";
+import { isBoolean, isNullish } from "./common/type.js";
 import { stringifyAttribues, stringifyClasses } from "./stringify.js";
 
 const State = Object.freeze({
@@ -62,6 +63,14 @@ export class ScopedDomHandler extends DomHandler {
 
 export class AnyChunkParser extends Parser {
   write(chunk) {
+    if (isBoolean(chunk) || isNullish(chunk)) {
+      if (this.tokenizer.state === State.BeforeAttributeValue) {
+        super.write('""');
+      }
+
+      return;
+    }
+
     switch (this.tokenizer.state) {
       case State.BeforeAttributeName:
         super.write(stringifyAttribues(chunk));
