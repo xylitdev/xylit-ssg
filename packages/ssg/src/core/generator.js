@@ -2,7 +2,6 @@ import { load } from "cheerio/slim";
 
 import { memoize } from "#lib/common/function.js";
 import { findMapLast } from "#lib/common/iterable.js";
-import { isBoolean, isNullish } from "#lib/common/type.js";
 import { ScopedDomHandler, AnyChunkParser } from "#lib/htmlparser2.js";
 
 import { __Context } from "./component.js";
@@ -39,8 +38,6 @@ export function createGenerator(transform) {
 
         assets.add(resource);
       }
-
-      if (isBoolean(chunk) || isNullish(chunk)) continue;
 
       handler.scope = findMapLast(hierarchy, ({ scope }) => scope);
       parser.write(chunk);

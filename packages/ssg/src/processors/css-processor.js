@@ -7,18 +7,18 @@ export function createCssProcessor(options) {
   return {
     condition: r => r.mediaType === "text/css",
     async transform(resource) {
-      const meta = {};
+      const meta = resource.meta ?? {};
       const plugins = Array.from(options?.plugins ?? []);
 
-      if (resource.meta.scope) {
-        const plugin = PostcssScopedPlugin(resource.meta.scope);
+      if (meta.scope) {
+        const plugin = PostcssScopedPlugin(meta.scope);
         plugins.push(plugin);
       }
 
-      if (resource.meta.cssModule) {
+      if (meta.cssModule) {
         const plugin = PostcssModulesPlugin({
           ...options,
-          ...cssModule,
+          ...meta.cssModule,
           getJSON: (filename, json) => (meta.exports = json),
         });
 

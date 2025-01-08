@@ -21,7 +21,7 @@ export class Resource {
     this.contents = contents;
     this.mediaType = mediaType ?? mime.getType(path);
     this.virtual = (!path || virtual) ?? true;
-    this.meta = { ...meta };
+    this.meta = meta;
 
     Object.freeze(this);
   }
